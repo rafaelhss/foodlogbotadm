@@ -1,0 +1,11 @@
+version: '2'
+services:
+    foodlogbotadm-postgresql:
+        image: postgres:9.6.2
+        # volumes:
+        #     - ~/volumes/jhipster/foodlogbotadm/postgresql/:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=foodlogbotadm
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432

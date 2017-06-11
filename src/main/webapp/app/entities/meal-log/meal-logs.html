@@ -1,0 +1,69 @@
+<div>
+    <h2>Meal Logs</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="meal-log.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span >
+                        Create new Meal Log
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.reset()">
+                    <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="photo"><span>Photo</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="mealDateTime"><span>Meal Date Time</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="scheduledMeal.name"><span>Scheduled Meal</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody infinite-scroll="vm.loadPage(vm.page + 1)" infinite-scroll-disabled="vm.page >= vm.links['last']">
+                <tr ng-repeat="mealLog in vm.mealLogs track by mealLog.id">
+                    <td><a ui-sref="meal-log-detail({id:mealLog.id})">{{mealLog.id}}</a></td>
+                    <td>
+                        <a ng-if="mealLog.photo" ng-click="vm.openFile(mealLog.photoContentType, mealLog.photo)">
+                            <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 30px;" alt="mealLog image"/>
+                        </a>
+                        <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span>
+                    </td>
+                    <td>{{mealLog.mealDateTime | date:'medium'}}</td>
+                    <td>{{mealLog.comment}}</td>
+                    <td>
+                        <a ui-sref="scheduled-meal-detail({id:mealLog.scheduledMeal.id})">{{mealLog.scheduledMeal.name}}</a>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="meal-log-detail({id:mealLog.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="meal-log.edit({id:mealLog.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="meal-log.delete({id:mealLog.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
