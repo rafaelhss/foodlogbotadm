@@ -36,10 +36,9 @@ public class MealLogFactory {
         //Date = now
         mealLog.setMealDateTime(Instant.now());
 
-        //Comment = caption + text
+        //Comment = caption
         mealLog.setComment((
-                update.getMessage().getCaption() + " | " +
-                        update.getMessage().getText()));
+                update.getMessage().getCaption().trim()));
 
         //Photo
         byte[] imageBytes = getPicture(update);
@@ -86,8 +85,8 @@ public class MealLogFactory {
         int minute = Integer.parseInt(time[1]);
         ZonedDateTime target = now.with(LocalTime.of(hour, minute));
 
-        ZonedDateTime after = target.plusMinutes(20);
-        ZonedDateTime before = target.minusMinutes(20);
+        ZonedDateTime after = target.plusMinutes(30);
+        ZonedDateTime before = target.minusMinutes(30);
 
         System.out.println("datas:");
         System.out.println(now);
