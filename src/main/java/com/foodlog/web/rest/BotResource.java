@@ -23,6 +23,9 @@ public class BotResource {
     @Autowired
     private MealLogService mealLogService;
 
+    @Autowired
+    private MealLogFactory mealLogFactory;
+
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
     @RequestMapping(method= RequestMethod.POST, value="/update")
@@ -36,7 +39,7 @@ public class BotResource {
         //testa se recebeu foto
         if(update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0){
 
-            MealLog mealLog = new MealLogFactory(update).create();
+            MealLog mealLog = mealLogFactory.create(update);
             MealLog mealLog1 = mealLogService.save(mealLog);
             message = "Foto salva com sucesso. Meallog (" + mealLog1.getId() + ") registrado ";
             if(mealLog1.getScheduledMeal() == null) {

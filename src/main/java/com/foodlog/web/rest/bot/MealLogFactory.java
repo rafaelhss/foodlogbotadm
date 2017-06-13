@@ -7,6 +7,7 @@ import com.foodlog.repository.ScheduledMealRepository;
 import com.foodlog.web.rest.bot.model.GetFile;
 import com.foodlog.web.rest.bot.model.Update;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
@@ -22,18 +23,13 @@ import java.time.ZonedDateTime;
 /**
  * Created by rafael on 04/06/17.
  */
+@Service
 public class MealLogFactory {
 
     @Autowired
     ScheduledMealRepository scheduledMealRepository;
 
-    private Update update;
-
-    public MealLogFactory(Update update) {
-        this.update = update;
-    }
-
-    public MealLog create() {
+    public MealLog create(Update update) {
         MealLog mealLog = new MealLog();
 
         //Date = now
@@ -45,7 +41,7 @@ public class MealLogFactory {
                         update.getMessage().getText()));
 
         //Photo
-        byte[] imageBytes = getPicture();
+        byte[] imageBytes = getPicture(update);
         mealLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imageBytes)));
         mealLog.setPhotoContentType("image/jpg");
 
@@ -93,7 +89,7 @@ public class MealLogFactory {
     }
 
 
-    private byte[] getPicture() {
+    private byte[] getPicture(Update update) {
         int id = update.getMessage().getPhoto().size() -1 ;
         String file_id = update.getMessage().getPhoto().get(id).getFile_id();
 
