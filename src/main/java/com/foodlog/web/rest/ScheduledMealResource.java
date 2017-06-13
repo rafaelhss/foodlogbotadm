@@ -86,7 +86,7 @@ public class ScheduledMealResource {
     @Timed
     public List<ScheduledMeal> getAllScheduledMeals() {
         log.debug("REST request to get all ScheduledMeals");
-        return scheduledMealRepository.findAll();
+        return scheduledMealRepository.findByOrderByTargetTime();
     }
 
     /**

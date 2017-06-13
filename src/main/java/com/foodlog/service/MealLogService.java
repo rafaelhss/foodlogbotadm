@@ -45,7 +45,7 @@ public class MealLogService {
     @Transactional(readOnly = true)
     public Page<MealLog> findAll(Pageable pageable) {
         log.debug("Request to get all MealLogs");
-        return mealLogRepository.findAll(pageable);
+        return mealLogRepository.findByOrderByMealDateTimeDesc(pageable);
     }
 
     /**
