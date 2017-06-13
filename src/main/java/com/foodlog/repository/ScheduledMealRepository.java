@@ -5,6 +5,8 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.jpa.repository.*;
 
+import java.util.List;
+
 
 /**
  * Spring Data JPA repository for the ScheduledMeal entity.
@@ -12,5 +14,6 @@ import org.springframework.data.jpa.repository.*;
 @SuppressWarnings("unused")
 @Repository
 public interface ScheduledMealRepository extends JpaRepository<ScheduledMeal,Long> {
-    
+    public List<ScheduledMeal> findByName(String name);
+
 }

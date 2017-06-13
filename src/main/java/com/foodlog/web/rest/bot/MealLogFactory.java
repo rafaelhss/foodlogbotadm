@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 /**
  * Created by rafael on 04/06/17.
@@ -55,6 +56,15 @@ public class MealLogFactory {
 
     private ScheduledMeal defineScheduledMeal(MealLog mealLog) {
         try {
+
+            if(mealLog.getComment() != null && !mealLog.getComment().isEmpty()){
+                List<ScheduledMeal> scheduledMeals = scheduledMealRepository.findByName(mealLog.getComment());
+                if(scheduledMeals != null && !scheduledMeals.isEmpty()){
+                    return scheduledMeals.get(0);
+                }
+            }
+
+
             for (ScheduledMeal scheduledMeal : scheduledMealRepository.findAll()) {
                 if(checkTime(scheduledMeal)) {
                     return scheduledMeal;
