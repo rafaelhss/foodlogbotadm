@@ -37,8 +37,10 @@ public class MealLogFactory {
         mealLog.setMealDateTime(Instant.now());
 
         //Comment = caption
-        mealLog.setComment((
-                update.getMessage().getCaption().trim()));
+        String caption = update.getMessage().getCaption();
+        if(caption != null) {
+            mealLog.setComment((caption.trim()));
+        }
 
         //Photo
         byte[] imageBytes = getPicture(update);
