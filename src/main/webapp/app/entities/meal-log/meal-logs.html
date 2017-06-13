@@ -31,9 +31,9 @@
                     <td><a ui-sref="meal-log-detail({id:mealLog.id})">{{mealLog.id}}</a></td>
                     <td>
                         <a ng-if="mealLog.photo" ng-click="vm.openFile(mealLog.photoContentType, mealLog.photo)">
-                            <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 30px;" alt="mealLog image"/>
+                            <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 150px;" alt="mealLog image"/>
                         </a>
-                        <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span>
+                        <!-- <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span> -->
                     </td>
                     <td>{{mealLog.mealDateTime | date:'medium'}}</td>
                     <td>{{mealLog.comment}}</td>
