@@ -6,12 +6,15 @@ import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +22,12 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("/api")
 public class BotResource {
+
+    @Autowired
+    private HttpRequest httpRequest;
+
+    private List<Long> receivedMessages = new ArrayList<Long>();
+
 
     @Autowired
     private MealLogService mealLogService;
@@ -36,26 +45,43 @@ public class BotResource {
 
         String message = "Algum erro aconteceu...";
 
-        //testa se recebeu foto
-        if(update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0){
+        if(!checkDuplicatedMessage(update.getUpdate_id())) {
 
-            MealLog mealLog = mealLogFactory.create(update);
-            MealLog mealLog1 = mealLogService.save(mealLog);
-            message = "Foto salva com sucesso. Meallog (" + mealLog1.getId() + ") registrado ";
-            if(mealLog1.getScheduledMeal() == null) {
-                message += "sem classificação";
-            } else {
-                message += "como " + mealLog1.getScheduledMeal().getName();
+            try {
+                //testa se recebeu foto
+                if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
+
+                    MealLog mealLog = mealLogFactory.create(update);
+                    MealLog mealLog1 = mealLogService.save(mealLog);
+                    message = "Foto salva com sucesso. Meallog (" + mealLog1.getId() + ") registrado ";
+                    if (mealLog1.getScheduledMeal() == null) {
+                        message += "sem classificação";
+                    } else {
+                        message += "como " + mealLog1.getScheduledMeal().getName();
+                    }
+                } else {
+                    System.out.println("nao veio foto");
+                    message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
+                }
+
+                new Sender(BOT_ID).sendResponse(user_id, message);
+
+                receivedMessages.add(update.getUpdate_id());
+
+            } catch (IOException ex) {
+                Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
-            System.out.println("nao veio foto");
-            message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
-        }
 
-        try {
-            new Sender(BOT_ID).sendResponse(user_id, message);
-        } catch (IOException ex) {
-            Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
+
         }
+    }
+
+    private boolean checkDuplicatedMessage(Long update_id) {
+        for (Long id : receivedMessages) {
+            if(id == update_id){
+                return true;
+            }
+        }
+        return false;
     }
 }
