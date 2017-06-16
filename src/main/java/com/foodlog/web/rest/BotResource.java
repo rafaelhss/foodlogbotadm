@@ -110,7 +110,7 @@ public class BotResource {
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         long minutesSum = 0;
-        int count = 0;
+        long count = 0;
 
         ZonedDateTime lastMealTime = null;
             for (MealLog mealLog: mealLogs){
@@ -121,7 +121,7 @@ public class BotResource {
                     long minutes = Duration.between(brTime, lastMealTime).getSeconds() / (60); //minutos
                     if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
                         minutesSum += minutes;
-                        count++;
+                        count += 1L;
                     }
                     System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
                 }
@@ -134,7 +134,7 @@ public class BotResource {
             System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum + " avg:" + avg + " conta:" + minutesSum/mealLogs.size() + " cois:" + avg/60);
 
             if(mealLogs.size() > 1) {
-                return ". Media de intervalo: " + new DecimalFormat("#.00").format(avg) + " horas entre " + count + " refeicoes";
+                return ". Media de intervalo: " + new DecimalFormat("#.##").format(avg) + " horas entre " + count + " refeicoes";
             } else {
                 return "";
             }
