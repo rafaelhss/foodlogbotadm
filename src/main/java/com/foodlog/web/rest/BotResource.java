@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,12 +96,8 @@ public class BotResource {
 
     private String calculateMealIntervals() {
 
-        try {
-            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date today = new Date();
-            Date todayWithZeroTime = formatter.parse(formatter.format(today));
 
-            List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(todayWithZeroTime);
+            List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant.now().truncatedTo(ChronoUnit.DAYS));
 
             long minutesSum = 0;
 
@@ -115,14 +112,14 @@ public class BotResource {
             Long avg = minutesSum/mealLogs.size();
 
             System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum);
-            
-            return " media de intervalo entre refeicoes: " + avg/60 + " horas";
 
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            if(mealLogs.size() > 1) {
+                return " media de intervalo entre refeicoes: " + avg / 60 + " horas";
+            } else {
+                return "";
+            }
 
-        return "";
+
     }
 
     private boolean checkDuplicatedMessage(Long update_id) {

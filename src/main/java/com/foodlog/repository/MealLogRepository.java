@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.jpa.repository.*;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -18,5 +19,5 @@ import java.util.List;
 @Repository
 public interface MealLogRepository extends JpaRepository<MealLog,Long> {
     Page<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
-    List<MealLog> findByMealDateTimeAfterOrderByMealDateTimeDesc(Date today);
+    List<MealLog> findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant today);
 }
