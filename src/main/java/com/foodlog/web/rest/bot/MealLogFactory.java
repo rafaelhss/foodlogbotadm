@@ -90,12 +90,6 @@ public class MealLogFactory {
         ZonedDateTime after = target.plusMinutes(30);
         ZonedDateTime before = target.minusMinutes(30);
 
-        System.out.println("datas:");
-        System.out.println(now);
-        System.out.println(target);
-        System.out.println(before);
-        System.out.println(after);
-
         return (now.isBefore(after) && now.isAfter(before));
     }
 

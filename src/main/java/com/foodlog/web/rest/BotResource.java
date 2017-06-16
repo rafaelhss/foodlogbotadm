@@ -107,20 +107,25 @@ public class BotResource {
 
         List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS));
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            long minutesSum = 0;
 
-            Instant lastMealTime = null;
+        long minutesSum = 0;
+        int count = 0;
+
+        ZonedDateTime lastMealTime = null;
             for (MealLog mealLog: mealLogs){
                 if(lastMealTime != null) {
 
-                    long minutes = Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60); //minutos
-                    if (minutes * 60 < 6) { // passou um dia. ignora
+                    ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
+
+                    long minutes = Duration.between(brTime, lastMealTime).getSeconds() / (60); //minutos
+                    if (brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
                         minutesSum += minutes;
+                        count++;
                     }
-                    System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(minutes * 60 < 6));
+                    System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
                 }
 
-                lastMealTime = mealLog.getMealDateTime();
+                lastMealTime =  mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));;
             }
 
             Long avg = minutesSum/mealLogs.size();
@@ -128,7 +133,7 @@ public class BotResource {
             System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum + " avg:" + avg + " conta:" + minutesSum/mealLogs.size() + " cois:" + avg/60);
 
             if(mealLogs.size() > 1) {
-                return " media de intervalo entre refeicoes: " + avg / 60 + " horas";
+                return ". Media de intervalo: " + avg / 60 + " horas entre " + count + " refeicoes";
             } else {
                 return "";
             }
