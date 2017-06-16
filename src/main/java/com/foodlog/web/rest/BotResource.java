@@ -22,6 +22,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Level;
@@ -98,7 +100,12 @@ public class BotResource {
 
 
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " + Instant.now().truncatedTo(ChronoUnit.DAYS));
-            List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant.now().truncatedTo(ChronoUnit.DAYS));
+
+        Instant now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant();
+        System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")):" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")).toInstant():" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant());
+
+        List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS));
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             long minutesSum = 0;
 
