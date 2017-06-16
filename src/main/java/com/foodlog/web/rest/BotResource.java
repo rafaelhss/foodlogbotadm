@@ -143,7 +143,7 @@ public class BotResource {
             System.out.println("hours:" + hours);
 
             if(mealLogs.size() > 1) {
-                return ". Media de intervalo: " + hours + " horas e "+ minutes + "minutos entre " + count + " refeicoes";
+                return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes";
             } else {
                 return "";
             }
