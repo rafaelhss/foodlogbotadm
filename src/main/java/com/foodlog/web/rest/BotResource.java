@@ -112,8 +112,14 @@ public class BotResource {
             Instant lastMealTime = null;
             for (MealLog mealLog: mealLogs){
                 if(lastMealTime != null) {
-                    minutesSum += Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60); //minutos
+
+                    long minutes = Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60); //minutos
+                    if (minutes * 60 < 6) { // passou um dia. ignora
+                        minutesSum += minutes;
+                    }
+                    System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(minutes * 60 < 6));
                 }
+
                 lastMealTime = mealLog.getMealDateTime();
             }
 
