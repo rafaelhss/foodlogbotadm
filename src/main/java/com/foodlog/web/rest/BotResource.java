@@ -23,9 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +35,7 @@ public class BotResource {
     @Autowired
     private HttpServletRequest request;
 
-    private List<Long> receivedMessages;// = new ArrayList<Long>();
+    private Map<Long, Long> receivedMessages;// = new ArrayList<Long>();
 
 
     @Autowired
@@ -51,54 +49,57 @@ public class BotResource {
     @RequestMapping(method= RequestMethod.POST, value="/update")
     public void ReceberUpdate(@RequestBody Update update){
 
-        receivedMessages = (List<Long>) request.getSession().getAttribute("receivedMessages");
+        receivedMessages = (Map<Long, Long>) request.getSession().getAttribute("receivedMessages");
         if(receivedMessages == null){
-            receivedMessages = new ArrayList<>();
+            receivedMessages = new HashMap<>();
         }
 
-        String mensagem = update.getMessage().getText();
-        int user_id = update.getMessage().getFrom().getId();
+        if(receivedMessages.get(update.getUpdate_id()) == null) {
 
-        String message = "Algum erro aconteceu...";
+            int user_id = update.getMessage().getFrom().getId();
 
-        if(!checkDuplicatedMessage(update.getUpdate_id())) {
+            String message = "Algum erro aconteceu...";
 
-            try {
-                //testa se recebeu foto
-                if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
+                try {
+                    //testa se recebeu foto
+                    if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
-                    MealLog mealLog = mealLogFactory.create(update);
-                    MealLog mealLog1 = mealLogRepository.save(mealLog);
-                    message = "Foto salva com sucesso, ";
-                    if (mealLog1.getScheduledMeal() == null) {
-                        message += "sem classificação";
+                        MealLog mealLog = mealLogFactory.create(update);
+                        MealLog mealLog1 = mealLogRepository.save(mealLog);
+                        message = "Foto salva com sucesso, ";
+                        if (mealLog1.getScheduledMeal() == null) {
+                            message += "sem classificação";
+                        } else {
+                            message += "como " + mealLog1.getScheduledMeal().getName();
+                        }
+
+                        message += calculateMealIntervals();
+
                     } else {
-                        message += "como " + mealLog1.getScheduledMeal().getName();
+                        System.out.println("nao veio foto");
+                        message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
                     }
 
-                    message += calculateMealIntervals();
+                    new Sender(BOT_ID).sendResponse(user_id, message);
 
-                } else {
-                    System.out.println("nao veio foto");
-                    message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
+                    receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
+                    request.getSession().setAttribute("receivedMessages", receivedMessages);
+
+                } catch (IOException ex) {
+                    Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                new Sender(BOT_ID).sendResponse(user_id, message);
-
-                receivedMessages.add(update.getUpdate_id());
-                request.getSession().setAttribute("receivedMessages", receivedMessages);
-
-            } catch (IOException ex) {
-                Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        } else {
+            System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
         }
     }
 
     private String calculateMealIntervals() {
 
 
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " + Instant.now().truncatedTo(ChronoUnit.DAYS));
             List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant.now().truncatedTo(ChronoUnit.DAYS));
-
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             long minutesSum = 0;
 
             Instant lastMealTime = null;
@@ -111,7 +112,7 @@ public class BotResource {
 
             Long avg = minutesSum/mealLogs.size();
 
-            System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum);
+            System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum + " avg:" + avg + " conta:" + minutesSum/mealLogs.size() + " cois:" + avg/60);
 
             if(mealLogs.size() > 1) {
                 return " media de intervalo entre refeicoes: " + avg / 60 + " horas";
@@ -122,12 +123,5 @@ public class BotResource {
 
     }
 
-    private boolean checkDuplicatedMessage(Long update_id) {
-        for (Long id : receivedMessages) {
-            if(id == update_id){
-                return true;
-            }
-        }
-        return false;
-    }
+
 }
