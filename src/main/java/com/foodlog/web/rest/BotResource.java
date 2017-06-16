@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -118,7 +119,7 @@ public class BotResource {
                     ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
 
                     long minutes = Duration.between(brTime, lastMealTime).getSeconds() / (60); //minutos
-                    if (brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
+                    if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
                         minutesSum += minutes;
                         count++;
                     }
@@ -128,12 +129,12 @@ public class BotResource {
                 lastMealTime =  mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));;
             }
 
-            Long avg = minutesSum/mealLogs.size();
+            Long avg = (minutesSum/(long)count)/60L;
 
             System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum + " avg:" + avg + " conta:" + minutesSum/mealLogs.size() + " cois:" + avg/60);
 
             if(mealLogs.size() > 1) {
-                return ". Media de intervalo: " + avg / 60 + " horas entre " + count + " refeicoes";
+                return ". Media de intervalo: " + new DecimalFormat("#.00").format(avg) + " horas entre " + count + " refeicoes";
             } else {
                 return "";
             }
