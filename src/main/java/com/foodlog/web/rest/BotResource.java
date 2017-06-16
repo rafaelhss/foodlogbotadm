@@ -109,7 +109,7 @@ public class BotResource {
         List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS));
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-        float minutesSum = 0;
+        float secondsSum = 0;
         float count = 0;
 
         ZonedDateTime lastMealTime = null;
@@ -118,9 +118,9 @@ public class BotResource {
 
                     ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
 
-                    float minutes = Duration.between(brTime, lastMealTime).getSeconds() / (60); //minutos
+                    float seconds = Duration.between(brTime, lastMealTime).getSeconds();
                     if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
-                        minutesSum += minutes;
+                        secondsSum += seconds;
                         count += 1F;
                     }
                     System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
@@ -129,12 +129,21 @@ public class BotResource {
                 lastMealTime =  mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));;
             }
 
-            float avg = (minutesSum/count)/60F;
+            float avgSeconds = (secondsSum/count);
 
-            System.out.println("meals:"  + mealLogs.size() + " sum:" + minutesSum + " avg:" + avg + " conta:" + minutesSum/mealLogs.size() + " cois:" + avg/60);
+
+            float milliseconds = avgSeconds * 1000;
+
+            int seconds = (int) (milliseconds / 1000) % 60 ;
+            int minutes = (int) ((milliseconds / (1000*60)) % 60);
+            int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+
+            System.out.println("meals:"  + count+ " sum:" + secondsSum + " avg:" + avgSeconds);
+            System.out.println("minuto:" + minutes);
+            System.out.println("hours:" + hours);
 
             if(mealLogs.size() > 1) {
-                return ". Media de intervalo: " + new DecimalFormat("#0.00").format(avg) + " horas entre " + count + " refeicoes";
+                return ". Media de intervalo: " + hours + " horas e "+ minutes + "minutos entre " + count + " refeicoes";
             } else {
                 return "";
             }
