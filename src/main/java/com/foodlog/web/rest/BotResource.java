@@ -66,7 +66,7 @@ public class BotResource {
             String message = "Algum erro aconteceu...";
 
 
-            if(update.getMessage().getText() != null && update.getMessage().getText().equals("prox")){
+            if(update.getMessage().getText() != null && update.getMessage().getText().trim().toLowerCase().equals("prox")){
                 processaProx(update, user_id);
             } else {
                 processPhoto(update, user_id);
