@@ -93,6 +93,7 @@ public class BotResource {
                 if(getZonedTargetTime(scheduledMeal).isAfter(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")))
                     && getZonedTargetTime(scheduledMeal).isBefore(nextTime)) {
                     next = scheduledMeal;
+                    nextTime = getZonedTargetTime(scheduledMeal);
                 }
             }
 
