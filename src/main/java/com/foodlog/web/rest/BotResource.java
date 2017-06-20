@@ -106,27 +106,32 @@ public class BotResource {
         System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")):" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
         System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")).toInstant():" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant());
 
-        List<MealLog>mealLogs = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS));
+        List<MealLog> mealLogs2Days = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS));
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         float secondsSum = 0;
         float count = 0;
 
-        ZonedDateTime lastMealTime = null;
-            for (MealLog mealLog: mealLogs){
+        Instant lastMealTime = null;
+            for (MealLog mealLog: mealLogs2Days){
                 if(lastMealTime != null) {
 
-                    ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
+                    //ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
+                    Instant current = mealLog.getMealDateTime();
 
-                    float seconds = Duration.between(brTime, lastMealTime).getSeconds();
-                    if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
+                    float seconds = Duration.between(current, lastMealTime).getSeconds();
+
+                    //if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
+                    if(seconds > (60 * 60 * 5)) { //se for mais que 5 horas chegou no dia anterior. ai para
+                        break;
+                    } else {
                         secondsSum += seconds;
                         count += 1F;
                     }
-                    System.out.println(mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
+                    System.out.println(mealLog.getId() + "----> " + mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
                 }
 
-                lastMealTime =  mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));;
+                lastMealTime =  mealLog.getMealDateTime();
             }
 
             float avgSeconds = (secondsSum/count);
