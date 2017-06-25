@@ -1,7 +1,9 @@
 package com.foodlog.web.rest;
 
 import com.foodlog.domain.MealLog;
+import com.foodlog.domain.ScheduledMeal;
 import com.foodlog.repository.MealLogRepository;
+import com.foodlog.repository.ScheduledMealRepository;
 import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
@@ -21,10 +23,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Level;
@@ -40,6 +39,9 @@ public class BotResource {
 
     private Map<Long, Long> receivedMessages;// = new ArrayList<Long>();
 
+
+    @Autowired
+    ScheduledMealRepository scheduledMealRepository;
 
     @Autowired
     private MealLogRepository mealLogRepository;
@@ -63,37 +65,91 @@ public class BotResource {
 
             String message = "Algum erro aconteceu...";
 
-                try {
-                    //testa se recebeu foto
-                    if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
-                        MealLog mealLog = mealLogFactory.create(update);
-                        MealLog mealLog1 = mealLogRepository.save(mealLog);
-                        message = "Foto salva com sucesso, ";
-                        if (mealLog1.getScheduledMeal() == null) {
-                            message += "sem classificação";
-                        } else {
-                            message += "como " + mealLog1.getScheduledMeal().getName();
-                        }
+            if(update.getMessage().getText() != null && update.getMessage().getText().trim().toLowerCase().equals("prox")){
+                processaProx(update, user_id);
+            } else {
+                processPhoto(update, user_id);
+            }
 
-                        message += calculateMealIntervals();
+            receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
+            request.getSession().setAttribute("receivedMessages", receivedMessages);
 
-                    } else {
-                        System.out.println("nao veio foto");
-                        message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
-                    }
-
-                    new Sender(BOT_ID).sendResponse(user_id, message);
-
-                    receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
-                    request.getSession().setAttribute("receivedMessages", receivedMessages);
-
-                } catch (IOException ex) {
-                    Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
-                }
 
         } else {
             System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
+        }
+    }
+
+    private void processaProx(Update update, int user_id) {
+
+        String message = "";
+
+        ZonedDateTime nextTime = ZonedDateTime.now().plus(1,ChronoUnit.DAYS);
+        ScheduledMeal next = null;
+
+        try {
+            for (ScheduledMeal scheduledMeal : scheduledMealRepository.findAll()) {
+                if(getZonedTargetTime(scheduledMeal).isAfter(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")))
+                    && getZonedTargetTime(scheduledMeal).isBefore(nextTime)) {
+                    next = scheduledMeal;
+                    nextTime = getZonedTargetTime(scheduledMeal);
+                }
+            }
+
+            if (next == null) {
+                message = "Não achei a proxima.";
+            } else {
+                message = "Sua proxima refeição agendada: " + next.getName() + "(" + next.getTargetTime() + ") " + next.getDescription();
+            }
+
+            new Sender(BOT_ID).sendResponse(user_id, message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ZonedDateTime getZonedTargetTime(ScheduledMeal scheduledMeal) {
+        String time[] = scheduledMeal.getTargetTime().split(":");
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+
+        int hour = Integer.parseInt(time[0]);
+        int minute = Integer.parseInt(time[1]);
+
+        return now.with(LocalTime.of(hour, minute));
+
+    }
+
+
+    private void processPhoto(@RequestBody Update update, int user_id) {
+        String message;
+        try {
+            //testa se recebeu foto
+            if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
+
+                MealLog mealLog = mealLogFactory.create(update);
+                MealLog mealLog1 = mealLogRepository.save(mealLog);
+                message = "Foto salva com sucesso, ";
+                if (mealLog1.getScheduledMeal() == null) {
+                    message += "sem classificação";
+                } else {
+                    message += "como " + mealLog1.getScheduledMeal().getName();
+                }
+
+                message += calculateMealIntervals();
+
+            } else {
+                System.out.println("nao veio foto");
+                message = "Nenhuma foto encontrada na mensagem. Nada fiz...";
+            }
+
+            new Sender(BOT_ID).sendResponse(user_id, message);
+
+
+        } catch (IOException ex) {
+            Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
