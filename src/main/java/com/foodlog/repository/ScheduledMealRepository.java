@@ -18,5 +18,6 @@ import java.util.List;
 public interface ScheduledMealRepository extends JpaRepository<ScheduledMeal,Long> {
     public List<ScheduledMeal> findByName(String name);
     List<ScheduledMeal> findByOrderByTargetTime();
+    List<ScheduledMeal> findByOrderByTargetTimeDesc();
 
 }
