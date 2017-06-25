@@ -220,7 +220,7 @@ public class BotResource {
 
         for(ScheduledMeal scheduledMeal:scheduledMealRepository.findByOrderByTargetTime()){
             ZonedDateTime current = getZonedTargetTime(scheduledMeal);
-            if(lastMealTime != null) {
+            if(lastMealTime != null && !current.equals(lastMealTime)) {
                 float seconds = Duration.between(current, lastMealTime).getSeconds();
                 secondsSum += seconds;
                 count += 1F;
