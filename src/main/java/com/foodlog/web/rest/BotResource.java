@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,7 +75,6 @@ public class BotResource {
 
             receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
             request.getSession().setAttribute("receivedMessages", receivedMessages);
-
 
         } else {
             System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
@@ -204,11 +204,40 @@ public class BotResource {
         System.out.println("hours:" + hours);
 
         if(avgSeconds > 1) {
-            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes";
+            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
         } else {
             return "";
         }
 
+
+    }
+
+    private String calcScheduledAvgIntervals() {
+
+        ZonedDateTime lastMealTime = null;
+        float secondsSum = 0;
+        float count = 0;
+
+        for(ScheduledMeal scheduledMeal:scheduledMealRepository.findByOrderByTargetTime()){
+            ZonedDateTime current = getZonedTargetTime(scheduledMeal);
+            if(lastMealTime != null) {
+                float seconds = Duration.between(current, lastMealTime).getSeconds();
+                secondsSum += seconds;
+                count += 1F;
+            }
+            lastMealTime = current;
+        }
+        float avgSeconds = (secondsSum/count);
+
+
+        float milliseconds = avgSeconds * 1000;
+
+        int seconds = (int) (milliseconds / 1000) % 60 ;
+        int minutes = (int) ((milliseconds / (1000*60)) % 60);
+        int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+
+
+        return hours + "h:"+ minutes + "m";
 
     }
 
