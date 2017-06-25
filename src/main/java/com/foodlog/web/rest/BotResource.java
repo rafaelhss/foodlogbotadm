@@ -169,45 +169,45 @@ public class BotResource {
         float count = 0;
 
         Instant lastMealTime = null;
-            for (MealLog mealLog: mealLogs2Days){
-                if(lastMealTime != null) {
+        for (MealLog mealLog: mealLogs2Days){
+            if(lastMealTime != null) {
 
-                    //ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
-                    Instant current = mealLog.getMealDateTime();
+                //ZonedDateTime brTime = mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo"));
+                Instant current = mealLog.getMealDateTime();
 
-                    float seconds = Duration.between(current, lastMealTime).getSeconds();
+                float seconds = Duration.between(current, lastMealTime).getSeconds();
 
-                    //if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
-                    if(seconds > (60 * 60 * 5)) { //se for mais que 5 horas chegou no dia anterior. ai para
-                        break;
-                    } else {
-                        secondsSum += seconds;
-                        count += 1F;
-                    }
-                    System.out.println(mealLog.getId() + "----> " + mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds() / (60) + "  ignore:" +(brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))));
+                //if (!brTime.truncatedTo(ChronoUnit.DAYS).isBefore(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS))) { // passou um dia. ignora
+                if(seconds > (60 * 60 * 5)) { //se for mais que 5 horas chegou no dia anterior. ai para
+                    break;
+                } else {
+                    secondsSum += seconds;
+                    count += 1F;
                 }
-
-                lastMealTime =  mealLog.getMealDateTime();
+                System.out.println(mealLog.getId() + "----> " + mealLog.getMealDateTime() + " ---> " + Duration.between(mealLog.getMealDateTime(), lastMealTime).getSeconds());
             }
 
-            float avgSeconds = (secondsSum/count);
+            lastMealTime =  mealLog.getMealDateTime();
+        }
+
+        float avgSeconds = (secondsSum/count);
 
 
-            float milliseconds = avgSeconds * 1000;
+        float milliseconds = avgSeconds * 1000;
 
-            int seconds = (int) (milliseconds / 1000) % 60 ;
-            int minutes = (int) ((milliseconds / (1000*60)) % 60);
-            int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
+        int seconds = (int) (milliseconds / 1000) % 60 ;
+        int minutes = (int) ((milliseconds / (1000*60)) % 60);
+        int hours   = (int) ((milliseconds / (1000*60*60)) % 24);
 
-            System.out.println("meals:"  + count+ " sum:" + secondsSum + " avg:" + avgSeconds);
-            System.out.println("minuto:" + minutes);
-            System.out.println("hours:" + hours);
+        System.out.println("meals:"  + count+ " sum:" + secondsSum + " avg:" + avgSeconds);
+        System.out.println("minuto:" + minutes);
+        System.out.println("hours:" + hours);
 
-            if(mealLogs.size() > 1) {
-                return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes";
-            } else {
-                return "";
-            }
+        if(avgSeconds > 1) {
+            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes";
+        } else {
+            return "";
+        }
 
 
     }
