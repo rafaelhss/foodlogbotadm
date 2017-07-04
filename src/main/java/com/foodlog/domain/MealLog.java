@@ -36,12 +36,11 @@ public class MealLog implements Serializable {
     @Column(name = "jhi_comment")
     private String comment;
 
-    @ManyToOne
-    private ScheduledMeal scheduledMeal;
-
-    @Column(unique = true, name = "update_id")
+    @Column(name = "update_id")
     private Long updateId;
 
+    @ManyToOne
+    private ScheduledMeal scheduledMeal;
 
     public Long getId() {
         return id;
@@ -103,6 +102,19 @@ public class MealLog implements Serializable {
         this.comment = comment;
     }
 
+    public Long getUpdateId() {
+        return updateId;
+    }
+
+    public MealLog updateId(Long updateId) {
+        this.updateId = updateId;
+        return this;
+    }
+
+    public void setUpdateId(Long updateId) {
+        this.updateId = updateId;
+    }
+
     public ScheduledMeal getScheduledMeal() {
         return scheduledMeal;
     }
@@ -144,14 +156,7 @@ public class MealLog implements Serializable {
             ", photoContentType='" + photoContentType + "'" +
             ", mealDateTime='" + getMealDateTime() + "'" +
             ", comment='" + getComment() + "'" +
+            ", updateId='" + getUpdateId() + "'" +
             "}";
-    }
-
-    public Long getUpdateId() {
-        return updateId;
-    }
-
-    public void setUpdateId(Long updateId) {
-        this.updateId = updateId;
     }
 }
