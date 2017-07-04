@@ -20,4 +20,5 @@ import java.util.List;
 public interface MealLogRepository extends JpaRepository<MealLog,Long> {
     Page<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
     List<MealLog> findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant today);
+    MealLog findByUpdateId(Long updateId);
 }

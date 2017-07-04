@@ -52,6 +52,10 @@ public class MealLogFactory {
         ScheduledMeal scheduledMeal = defineScheduledMeal(mealLog);
         mealLog.setScheduledMeal(scheduledMeal);
 
+
+        //update id
+        mealLog.setUpdateId(update.getUpdate_id());
+
         return mealLog;
     }
 

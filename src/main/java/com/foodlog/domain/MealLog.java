@@ -39,6 +39,10 @@ public class MealLog implements Serializable {
     @ManyToOne
     private ScheduledMeal scheduledMeal;
 
+    @Column(unique = true, name = "update_id")
+    private Long updateId;
+
+
     public Long getId() {
         return id;
     }
@@ -141,5 +145,13 @@ public class MealLog implements Serializable {
             ", mealDateTime='" + getMealDateTime() + "'" +
             ", comment='" + getComment() + "'" +
             "}";
+    }
+
+    public Long getUpdateId() {
+        return updateId;
+    }
+
+    public void setUpdateId(Long updateId) {
+        this.updateId = updateId;
     }
 }
