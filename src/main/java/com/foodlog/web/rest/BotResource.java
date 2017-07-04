@@ -38,6 +38,7 @@ public class BotResource {
     @Autowired
     private HttpServletRequest request;
 
+    private Map<Long, Long> receivedMessages;// = new ArrayList<Long>();
 
 
     @Autowired
@@ -54,8 +55,12 @@ public class BotResource {
     @RequestMapping(method= RequestMethod.POST, value="/update")
     public void ReceberUpdate(@RequestBody Update update){
 
+        receivedMessages = (Map<Long, Long>) request.getSession().getAttribute("receivedMessages");
+        if(receivedMessages == null){
+            receivedMessages = new HashMap<>();
+        }
 
-        if(mealLogRepository.findByUpdateId(update.getUpdate_id()) == null) {
+        if(receivedMessages.get(update.getUpdate_id()) == null) {
 
             int user_id = update.getMessage().getFrom().getId();
 
@@ -67,6 +72,9 @@ public class BotResource {
             } else {
                 processPhoto(update, user_id);
             }
+
+            receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
+            request.getSession().setAttribute("receivedMessages", receivedMessages);
 
         } else {
             System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
@@ -196,7 +204,7 @@ public class BotResource {
         System.out.println("hours:" + hours);
 
         if(avgSeconds > 1) {
-            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) ++count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
+            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
         } else {
             return "";
         }
