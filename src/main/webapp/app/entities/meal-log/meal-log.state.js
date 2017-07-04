@@ -99,7 +99,6 @@
                                 photoContentType: null,
                                 mealDateTime: null,
                                 comment: null,
-                                updateId: null,
                                 id: null
                             };
                         }

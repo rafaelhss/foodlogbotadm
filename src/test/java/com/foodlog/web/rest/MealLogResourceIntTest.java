@@ -52,9 +52,6 @@ public class MealLogResourceIntTest {
     private static final String DEFAULT_COMMENT = "AAAAAAAAAA";
     private static final String UPDATED_COMMENT = "BBBBBBBBBB";
 
-    private static final Long DEFAULT_UPDATE_ID = 1L;
-    private static final Long UPDATED_UPDATE_ID = 2L;
-
     @Autowired
     private MealLogRepository mealLogRepository;
 
@@ -98,8 +95,7 @@ public class MealLogResourceIntTest {
             .photo(DEFAULT_PHOTO)
             .photoContentType(DEFAULT_PHOTO_CONTENT_TYPE)
             .mealDateTime(DEFAULT_MEAL_DATE_TIME)
-            .comment(DEFAULT_COMMENT)
-            .updateId(DEFAULT_UPDATE_ID);
+            .comment(DEFAULT_COMMENT);
         return mealLog;
     }
 
@@ -127,7 +123,6 @@ public class MealLogResourceIntTest {
         assertThat(testMealLog.getPhotoContentType()).isEqualTo(DEFAULT_PHOTO_CONTENT_TYPE);
         assertThat(testMealLog.getMealDateTime()).isEqualTo(DEFAULT_MEAL_DATE_TIME);
         assertThat(testMealLog.getComment()).isEqualTo(DEFAULT_COMMENT);
-        assertThat(testMealLog.getUpdateId()).isEqualTo(DEFAULT_UPDATE_ID);
     }
 
     @Test
@@ -199,8 +194,7 @@ public class MealLogResourceIntTest {
             .andExpect(jsonPath("$.[*].photoContentType").value(hasItem(DEFAULT_PHOTO_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].photo").value(hasItem(Base64Utils.encodeToString(DEFAULT_PHOTO))))
             .andExpect(jsonPath("$.[*].mealDateTime").value(hasItem(DEFAULT_MEAL_DATE_TIME.toString())))
-            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())))
-            .andExpect(jsonPath("$.[*].updateId").value(hasItem(DEFAULT_UPDATE_ID.intValue())));
+            .andExpect(jsonPath("$.[*].comment").value(hasItem(DEFAULT_COMMENT.toString())));
     }
 
     @Test
@@ -217,8 +211,7 @@ public class MealLogResourceIntTest {
             .andExpect(jsonPath("$.photoContentType").value(DEFAULT_PHOTO_CONTENT_TYPE))
             .andExpect(jsonPath("$.photo").value(Base64Utils.encodeToString(DEFAULT_PHOTO)))
             .andExpect(jsonPath("$.mealDateTime").value(DEFAULT_MEAL_DATE_TIME.toString()))
-            .andExpect(jsonPath("$.comment").value(DEFAULT_COMMENT.toString()))
-            .andExpect(jsonPath("$.updateId").value(DEFAULT_UPDATE_ID.intValue()));
+            .andExpect(jsonPath("$.comment").value(DEFAULT_COMMENT.toString()));
     }
 
     @Test
@@ -243,8 +236,7 @@ public class MealLogResourceIntTest {
             .photo(UPDATED_PHOTO)
             .photoContentType(UPDATED_PHOTO_CONTENT_TYPE)
             .mealDateTime(UPDATED_MEAL_DATE_TIME)
-            .comment(UPDATED_COMMENT)
-            .updateId(UPDATED_UPDATE_ID);
+            .comment(UPDATED_COMMENT);
 
         restMealLogMockMvc.perform(put("/api/meal-logs")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -259,7 +251,6 @@ public class MealLogResourceIntTest {
         assertThat(testMealLog.getPhotoContentType()).isEqualTo(UPDATED_PHOTO_CONTENT_TYPE);
         assertThat(testMealLog.getMealDateTime()).isEqualTo(UPDATED_MEAL_DATE_TIME);
         assertThat(testMealLog.getComment()).isEqualTo(UPDATED_COMMENT);
-        assertThat(testMealLog.getUpdateId()).isEqualTo(UPDATED_UPDATE_ID);
     }
 
     @Test

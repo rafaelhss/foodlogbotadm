@@ -3,7 +3,7 @@
     "promptValues": {
       "packageName": "com.foodlog"
     },
-    "jhipsterVersion": "4.5.2",
+    "jhipsterVersion": "4.5.3",
     "baseName": "foodlogbotadm",
     "packageName": "com.foodlog",
     "packageFolder": "com/foodlog",

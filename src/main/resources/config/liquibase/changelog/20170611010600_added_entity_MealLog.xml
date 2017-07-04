@@ -36,10 +36,6 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="update_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
-
             <column name="scheduled_meal_id" type="bigint">
                 <constraints nullable="true" />
             </column>

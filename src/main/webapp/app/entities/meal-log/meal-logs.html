@@ -22,7 +22,6 @@
                     <th jh-sort-by="photo"><span>Photo</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="mealDateTime"><span>Meal Date Time</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="updateId"><span>Update Id</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="scheduledMeal.name"><span>Scheduled Meal</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
@@ -32,13 +31,12 @@
                     <td><a ui-sref="meal-log-detail({id:mealLog.id})">{{mealLog.id}}</a></td>
                     <td>
                         <a ng-if="mealLog.photo" ng-click="vm.openFile(mealLog.photoContentType, mealLog.photo)">
-                            <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 30px;" alt="mealLog image"/>
+                            <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 150px;" alt="mealLog image"/>
                         </a>
-                        <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span>
+                        <!-- <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span> -->
                     </td>
                     <td>{{mealLog.mealDateTime | date:'medium'}}</td>
                     <td>{{mealLog.comment}}</td>
-                    <td>{{mealLog.updateId}}</td>
                     <td>
                         <a ui-sref="scheduled-meal-detail({id:mealLog.scheduledMeal.id})">{{mealLog.scheduledMeal.name}}</a>
                     </td>
