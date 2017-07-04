@@ -204,7 +204,7 @@ public class BotResource {
         System.out.println("hours:" + hours);
 
         if(avgSeconds > 1) {
-            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
+            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) ++count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
         } else {
             return "";
         }
