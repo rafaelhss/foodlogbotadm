@@ -36,6 +36,7 @@ public class MealLogDayService {
                 MealLogDay mealLogDay = new MealLogDay();
                 mealLogDay.setMealLogList(new ArrayList<>());
                 mealLogDay.setMealLogDayDate(mealLog.getMealDateTime().atZone(ZoneId.of("America/Sao_Paulo")).truncatedTo(ChronoUnit.DAYS));
+                mealLogDay.setId(mealLog.getId());
                 days.put(day, mealLogDay);
             }
             days.get(day).getMealLogList().add(mealLog);

@@ -18,7 +18,7 @@
             },
             views: {
                 'content@': {
-                    templateUrl: 'app/entities/meal-log-day/meal-log-days.html',
+                    templateUrl: 'app/entities/meal-log-day/meal-log-days-timeline.html',
                     controller: 'MealLogDayController',
                     controllerAs: 'vm'
                 }
