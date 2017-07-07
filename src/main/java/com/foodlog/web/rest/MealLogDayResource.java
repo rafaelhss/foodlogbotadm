@@ -4,12 +4,15 @@ import com.codahale.metrics.annotation.Timed;
 import com.foodlog.domain.MealLogDay;
 
 import com.foodlog.repository.MealLogDayRepository;
+import com.foodlog.repository.MealLogRepository;
+import com.foodlog.service.MealLogDayService;
 import com.foodlog.web.rest.util.HeaderUtil;
 import com.foodlog.web.rest.util.PaginationUtil;
 import io.swagger.annotations.ApiParam;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +38,9 @@ public class MealLogDayResource {
     private static final String ENTITY_NAME = "mealLogDay";
 
     private final MealLogDayRepository mealLogDayRepository;
+
+    @Autowired
+    private MealLogDayService mealLogDayService;
 
     public MealLogDayResource(MealLogDayRepository mealLogDayRepository) {
         this.mealLogDayRepository = mealLogDayRepository;
@@ -92,7 +98,7 @@ public class MealLogDayResource {
     @Timed
     public ResponseEntity<List<MealLogDay>> getAllMealLogDays(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of MealLogDays");
-        Page<MealLogDay> page = mealLogDayRepository.findAll(pageable);
+        Page<MealLogDay> page = mealLogDayService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/meal-log-days");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

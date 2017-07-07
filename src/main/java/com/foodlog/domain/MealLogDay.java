@@ -1,9 +1,12 @@
 package com.foodlog.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,6 +37,11 @@ public class MealLogDay implements Serializable {
     public ZonedDateTime getMealLogDayDate() {
         return mealLogDayDate;
     }
+
+    @Transient
+    @JsonProperty
+    private List<MealLog> mealLogList;
+
 
     public MealLogDay mealLogDayDate(ZonedDateTime mealLogDayDate) {
         this.mealLogDayDate = mealLogDayDate;
@@ -70,5 +78,13 @@ public class MealLogDay implements Serializable {
             "id=" + getId() +
             ", mealLogDayDate='" + getMealLogDayDate() + "'" +
             "}";
+    }
+
+    public List<MealLog> getMealLogList() {
+        return mealLogList;
+    }
+
+    public void setMealLogList(List<MealLog> mealLogList) {
+        this.mealLogList = mealLogList;
     }
 }
