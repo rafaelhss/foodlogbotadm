@@ -1,90 +1,12 @@
 <div>
 
-
-    <h2>Meal Log Days Timeline 2</h2>
+    <h2>Meal Log Days Timeline</h2>
     <jhi-alert></jhi-alert>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-4 no-padding-left">
-                <button class="btn btn-primary" ui-sref="meal-log-day.new" >
-                    <span class="glyphicon glyphicon-plus"></span>
-                    <span >
-                        Create new Meal Log Day
-                    </span>
-                </button>
-            </div>
-        </div>
-    </div>
+
     <br/>
-    <div class="table-responsive">
-        <table class="jh-table table table-striped">
-            <thead>
-                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.reset()">
-                    <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th jh-sort-by="mealLogDayDate"><span>Meal Log Day Date</span> <span class="glyphicon glyphicon-sort"></span></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody infinite-scroll="vm.loadPage(vm.page + 1)" infinite-scroll-disabled="vm.page >= vm.links['last']">
-                <tr ng-repeat="mealLogDay in vm.mealLogDays track by mealLogDay.id">
-                    <td><a ui-sref="meal-log-day-detail({id:mealLogDay.id})">{{mealLogDay.id}}</a></td>
-                    <td>{{mealLogDay.mealLogDayDate | date:'medium'}}</td>
-                    <td><span ng-repeat="mealLog in mealLogDay.mealLogList">
-                            <a ng-if="mealLog.photo" ng-click="vm.openFile(mealLog.photoContentType, mealLog.photo)">
-                                <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" style="max-height: 30px;" alt="mealLog image"/>
-                            </a>
-                            <span ng-if="mealLog.photo">{{mealLog.photoContentType}}, {{vm.byteSize(mealLog.photo)}}</span>
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        <div class="btn-group flex-btn-group-container">
-                            <button type="submit"
-                                    ui-sref="meal-log-day-detail({id:mealLogDay.id})"
-                                    class="btn btn-info btn-sm">
-                                <span class="glyphicon glyphicon-eye-open"></span>
-                                <span class="hidden-sm-down"></span>
-                            </button>
-                            <button type="submit"
-                                    ui-sref="meal-log-day.edit({id:mealLogDay.id})"
-                                    class="btn btn-primary btn-sm">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                                <span class="hidden-sm-down"></span>
-                            </button>
-                            <button type="submit"
-                                    ui-sref="meal-log-day.delete({id:mealLogDay.id})"
-                                    class="btn btn-danger btn-sm">
-                                <span class="glyphicon glyphicon-remove-circle"></span>
-                                <span class="hidden-sm-down"></span>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+    <div ng-repeat="timelineData in timelineDatas"style="padding:10px;">
+        <vis-timeline ng-show="true" data="timelineData" options="timelineOptions"></vis-timeline>
     </div>
-    <div id="visualization"></div>
 
-    <script>
-  var items = new vis.DataSet([
-    {id: 'A', content: 'Period A', start: '2014-01-16', end: '2014-01-22', type: 'background'},
-    {id: 'B', content: 'Period B', start: '2014-01-25', end: '2014-01-30', type: 'background', className: 'negative'},
-    {id: 1, content: 'item 1<br>start', start: '2014-01-23'},
-    {id: 2, content: 'item 2', start: '2014-01-23 01:00'},
-    {id: 3, content: 'item 3', start: '2014-01-23 02:00'},
-    {id: 4, content: 'item 4', start: '2014-01-23 03:00'},
-    {id: 5, content: 'item 5', start: '2014-01-23 04:00', type:'point'},
-    {id: 6, content: 'item 6', start: '2014-01-23 05:00'}
-  ]);
-
-  var container = document.getElementById('visualization');
-  var options = {
-    start: '2014-01-10',
-    end: '2014-02-10',
-    editable: true
-  };
-
-  var timeline = new vis.Timeline(container, items, options);
-
-</script>
 </div>
