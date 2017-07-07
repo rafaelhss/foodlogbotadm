@@ -1,0 +1,29 @@
+{
+    "fluentMethods": true,
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "value",
+            "fieldType": "Float",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "weightDateTime",
+            "fieldType": "Instant",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "comment",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170707005110",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "weight",
+    "pagination": "infinite-scroll"
+}

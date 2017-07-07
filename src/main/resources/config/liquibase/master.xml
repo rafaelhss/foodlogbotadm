@@ -8,6 +8,7 @@
     <include file="classpath:config/liquibase/changelog/20170608135403_added_entity_Client.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170608104657_added_entity_ScheduledMeal.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170611010600_added_entity_MealLog.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170707005110_added_entity_Weight.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="classpath:config/liquibase/changelog/20170608104657_added_entity_constraints_ScheduledMeal.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170611010600_added_entity_constraints_MealLog.xml" relativeToChangelogFile="false"/>

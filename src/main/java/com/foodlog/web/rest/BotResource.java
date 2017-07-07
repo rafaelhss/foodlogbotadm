@@ -2,8 +2,10 @@ package com.foodlog.web.rest;
 
 import com.foodlog.domain.MealLog;
 import com.foodlog.domain.ScheduledMeal;
+import com.foodlog.domain.Weight;
 import com.foodlog.repository.MealLogRepository;
 import com.foodlog.repository.ScheduledMealRepository;
+import com.foodlog.repository.WeightRepository;
 import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
@@ -31,6 +33,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @RestController
 @RequestMapping("/api")
 public class BotResource {
@@ -49,6 +54,9 @@ public class BotResource {
 
     @Autowired
     private MealLogFactory mealLogFactory;
+
+    @Autowired
+    private WeightRepository weightRepository;
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
@@ -69,8 +77,10 @@ public class BotResource {
 
             if(update.getMessage().getText() != null && update.getMessage().getText().trim().toLowerCase().equals("prox")){
                 processaProx(update, user_id);
+            } else if(checkForWeight(update)) {
+                processWeight(update, user_id);
             } else {
-                processPhoto(update, user_id);
+                    processPhoto(update, user_id);
             }
 
             receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
@@ -79,6 +89,28 @@ public class BotResource {
         } else {
             System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
         }
+    }
+
+    private void processWeight(Update update, int user_id) {
+        Weight weight = new Weight();
+        Float value = Float.parseFloat(update.getMessage().getText());
+        weight.setValue(value);
+        weight.setWeightDateTime(Instant.now());
+
+        weightRepository.save(weight);
+    }
+
+    private boolean checkForWeight(Update update) {
+        String regex = "^[+-]?([0-9]*[.])?[0-9]+$";
+        // Create a Pattern object
+        Pattern r = Pattern.compile(regex);
+
+        // Now create matcher object.
+        if(update.getMessage().getText() != null) {
+            Matcher m = r.matcher(update.getMessage().getText());
+            return m.find();
+        }
+        return false;
     }
 
     private void processaProx(Update update, int user_id) {
