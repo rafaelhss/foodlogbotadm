@@ -98,6 +98,7 @@
                                 value: null,
                                 weightDateTime: null,
                                 comment: null,
+                                updateId: null,
                                 id: null
                             };
                         }

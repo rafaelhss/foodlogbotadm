@@ -19,6 +19,10 @@
         {
             "fieldName": "comment",
             "fieldType": "String"
+        },
+        {
+            "fieldName": "updateId",
+            "fieldType": "Long"
         }
     ],
     "changelogDate": "20170707005110",

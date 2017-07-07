@@ -22,6 +22,7 @@
                     <th jh-sort-by="value"><span>Value</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="weightDateTime"><span>Weight Date Time</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="updateId"><span>Update Id</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
@@ -31,6 +32,7 @@
                     <td>{{weight.value}}</td>
                     <td>{{weight.weightDateTime | date:'medium'}}</td>
                     <td>{{weight.comment}}</td>
+                    <td>{{weight.updateId}}</td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">
                             <button type="submit"

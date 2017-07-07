@@ -32,6 +32,9 @@ public class Weight implements Serializable {
     @Column(name = "jhi_comment")
     private String comment;
 
+    @Column(name = "update_id", nullable = true, unique = true)
+    private Long updateId;
+
     public Long getId() {
         return id;
     }
@@ -79,6 +82,19 @@ public class Weight implements Serializable {
         this.comment = comment;
     }
 
+    public Long getUpdateId() {
+        return updateId;
+    }
+
+    public Weight updateId(Long updateId) {
+        this.updateId = updateId;
+        return this;
+    }
+
+    public void setUpdateId(Long updateId) {
+        this.updateId = updateId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -106,6 +122,7 @@ public class Weight implements Serializable {
             ", value='" + getValue() + "'" +
             ", weightDateTime='" + getWeightDateTime() + "'" +
             ", comment='" + getComment() + "'" +
+            ", updateId='" + getUpdateId() + "'" +
             "}";
     }
 }

@@ -96,6 +96,7 @@ public class BotResource {
         Float value = Float.parseFloat(update.getMessage().getText());
         weight.setValue(value);
         weight.setWeightDateTime(Instant.now());
+        weight.setUpdateId(update.getUpdate_id());
 
         weightRepository.save(weight);
 
