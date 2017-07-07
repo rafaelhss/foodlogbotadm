@@ -93,7 +93,7 @@ public class WeightResource {
     @Timed
     public ResponseEntity<List<Weight>> getAllWeights(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of Weights");
-        Page<Weight> page = weightRepository.findAll(pageable);
+        Page<Weight> page = weightRepository.findByOrderByWeightDateTimeDesc(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/weights");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }

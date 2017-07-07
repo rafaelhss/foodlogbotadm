@@ -98,6 +98,12 @@ public class BotResource {
         weight.setWeightDateTime(Instant.now());
 
         weightRepository.save(weight);
+
+        try {
+            new Sender(BOT_ID).sendResponse(user_id, "Peso (" + value + ") salvo com sucesso.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean checkForWeight(Update update) {
