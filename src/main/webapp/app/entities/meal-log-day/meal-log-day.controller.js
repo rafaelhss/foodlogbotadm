@@ -16,7 +16,7 @@
 
         vm.mealLogDays = [];
         vm.loadPage = loadPage;
-        vm.itemsPerPage = paginationConstants.itemsPerPage * 10;
+        vm.itemsPerPage = paginationConstants.itemsPerPage * 3;
         vm.page = 0;
         vm.links = {
             last: 0
