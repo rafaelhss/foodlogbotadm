@@ -1,15 +1,15 @@
 <div>
 
     <style>
-       img {
+       .image {
             border:8px solid #AAAAAA;
-            width:60vw;
+            width:80vw;
             max-height: 40vh;
             border-radius: 25px;
         }
-        .image {
+        .imageDiv {
            position: relative;
-           width:60vw;
+           width:80vw;
            margin: auto;
         }
 
@@ -18,7 +18,7 @@
            bottom: 20px;
            right: 20px;
            background-color: #DDDDDD;
-           font-size: 200%;
+           font-size: 150%;
            border-radius: 10px;
         }
         .timeBarInterval{
@@ -60,9 +60,9 @@
                 <tr ng-repeat="mealLog in vm.mealLogs track by mealLog.id">
 
                     <td>
-                        <div class="image">
+                        <div class="imageDiv">
                             <a ui-sref="meal-log-detail({id:mealLog.id})">
-                                <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" alt="mealLog image"/>
+                                <img class="image" data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" alt="mealLog image"/>
                             </a>
                             <span class="time">{{(mealLog.mealDateTime | date: "EEE, hh:mm" )}}</span>
                         </div>
@@ -70,7 +70,7 @@
 
                         </div>
                         <div class="timeBarInterval">
-                            {{vm.getTimeInMinutes(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}} mins
+                            {{vm.getTimeInMinutes(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}}
                         </div>
                         <div class="timeBar" ng-style="{{vm.getTimeBarHeight(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}};">
 
