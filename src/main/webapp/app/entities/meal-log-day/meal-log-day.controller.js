@@ -5,42 +5,33 @@
         .module('foodlogbotadmApp')
         .controller('MealLogDayController', MealLogDayController);
 
-    MealLogDayController.$inject = ['DataUtils', 'MealLogDay', 'ParseLinks', 'AlertService', 'paginationConstants', 'VisDataSet', '$scope', '$http', '$filter'];
+    MealLogDayController.$inject = ['$state', 'MealLogDay', 'ParseLinks', 'AlertService', 'paginationConstants', 'pagingParams', 'VisDataSet', '$scope', '$http'];
 
-    function MealLogDayController(DataUtils, MealLogDay, ParseLinks, AlertService, paginationConstants, VisDataSet, $scope, $http, $filter) {
+    function MealLogDayController($state, MealLogDay, ParseLinks, AlertService, paginationConstants, pagingParams, VisDataSet, $scope, $http) {
 
         var vm = this;
 
-        vm.openFile = DataUtils.openFile;
-
-
-        vm.mealLogDays = [];
         vm.loadPage = loadPage;
-        vm.itemsPerPage = paginationConstants.itemsPerPage * 3;
-        vm.page = 0;
-        vm.links = {
-            last: 0
-        };
-        vm.predicate = 'id';
-        vm.reset = reset;
-        vm.reverse = true;
+        vm.predicate = pagingParams.predicate;
+        vm.reverse = pagingParams.ascending;
+        vm.transition = transition;
+        vm.itemsPerPage = paginationConstants.itemsPerPage;
 
-
-        var scheduledMeals = [];
+         var scheduledMeals = [];
 
         //primeiro busca os scheduled para fazer os background, depois busca os dias.
         $http.get("/api/scheduled-meals").then(function(data){
                 scheduledMeals = data.data;
                 loadAll();
             } , function(error){
-                console.log(error)
+                 AlertService.error(error.data.message);
+                 console.log(error)
             });
-
 
 
         function loadAll () {
             MealLogDay.query({
-                page: vm.page,
+                page: pagingParams.page - 1,
                 size: vm.itemsPerPage,
                 sort: sort()
             }, onSuccess, onError);
@@ -119,26 +110,31 @@
                 }
             }
 
+
             function onSuccess(data, headers) {
                 vm.links = ParseLinks.parse(headers('link'));
                 vm.totalItems = headers('X-Total-Count');
+                vm.queryCount = vm.totalItems;
+                vm.mealLogDays = data;
+                vm.page = pagingParams.page;
                 buildTimelineInfo(data);
             }
-
             function onError(error) {
                 AlertService.error(error.data.message);
             }
         }
 
-        function reset () {
-            vm.page = 0;
-            vm.mealLogDays = [];
-            loadAll();
-        }
-
         function loadPage(page) {
             vm.page = page;
-            loadAll();
+            vm.transition();
+        }
+
+        function transition() {
+            $state.transitionTo($state.$current, {
+                page: vm.page,
+                sort: vm.predicate + ',' + (vm.reverse ? 'asc' : 'desc'),
+                search: vm.currentSearch
+            });
         }
     }
 })();

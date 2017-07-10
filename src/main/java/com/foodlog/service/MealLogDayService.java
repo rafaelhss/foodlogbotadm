@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * Created by rafael on 07/07/17.
- */
+*/
 @Service
 public class MealLogDayService {
 
@@ -46,6 +46,7 @@ public class MealLogDayService {
         // trasforma cada dia do mapa em um item da lista
         List<MealLogDay> result = new ArrayList<MealLogDay>(days.values());
 
-        return new PageImpl<MealLogDay>(result, pageable, result.size());
+        //um dia tem em torno de 9 efeicoes. entao o count total esta quase coerente
+        return new PageImpl<MealLogDay>(result, pageable, mealLogRepository.count()/10);
     }
 }

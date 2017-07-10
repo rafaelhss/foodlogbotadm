@@ -11,7 +11,7 @@
         $stateProvider
         .state('meal-log-day', {
             parent: 'entity',
-            url: '/meal-log-day',
+            url: '/meal-log-day?page&sort&search',
             data: {
                 authorities: ['ROLE_USER'],
                 pageTitle: 'MealLogDays'
@@ -23,7 +23,27 @@
                     controllerAs: 'vm'
                 }
             },
+            params: {
+                page: {
+                    value: '1',
+                    squash: true
+                },
+                sort: {
+                    value: 'id,asc',
+                    squash: true
+                },
+                search: null
+            },
             resolve: {
+                pagingParams: ['$stateParams', 'PaginationUtil', function ($stateParams, PaginationUtil) {
+                    return {
+                        page: PaginationUtil.parsePage($stateParams.page),
+                        sort: $stateParams.sort,
+                        predicate: PaginationUtil.parsePredicate($stateParams.sort),
+                        ascending: PaginationUtil.parseAscending($stateParams.sort),
+                        search: $stateParams.search
+                    };
+                }],
             }
         })
         .state('meal-log-day-detail', {

@@ -11,5 +11,5 @@
     "dto": "no",
     "service": "no",
     "entityTableName": "meal_log_day",
-    "pagination": "infinite-scroll"
+    "pagination": "pagination"
 }

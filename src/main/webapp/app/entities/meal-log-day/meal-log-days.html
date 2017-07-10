@@ -17,13 +17,13 @@
     <div class="table-responsive">
         <table class="jh-table table table-striped">
             <thead>
-                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.reset()">
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
                     <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="mealLogDayDate"><span>Meal Log Day Date</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
-            <tbody infinite-scroll="vm.loadPage(vm.page + 1)" infinite-scroll-disabled="vm.page >= vm.links['last']">
+            <tbody>
                 <tr ng-repeat="mealLogDay in vm.mealLogDays track by mealLogDay.id">
                     <td><a ui-sref="meal-log-day-detail({id:mealLogDay.id})">{{mealLogDay.id}}</a></td>
                     <td>{{mealLogDay.mealLogDayDate | date:'medium'}}</td>
@@ -52,5 +52,9 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+        <uib-pagination class="pagination-sm" total-items="vm.totalItems" items-per-page="vm.itemsPerPage" ng-model="vm.page" ng-change="vm.transition()"></uib-pagination>
     </div>
 </div>
