@@ -11,6 +11,7 @@
 
         var vm = this;
 
+//inicio custom
         String.prototype.toHHMMSS = function () {
             var sec_num = parseInt(this, 10); // don't forget the second param
             var hours   = Math.floor(sec_num / 3600);
@@ -23,6 +24,13 @@
             return hours+'h:'+minutes+'m';//:'+seconds;
         }
 
+        vm.getTargetMissTextColor = function(meallog){
+            console.log(meallog)
+            if(meallog.scheduledMeal != null){
+                return '{"color": "#2bb5bc"}'
+            }
+        }
+
         vm.getTimeBarHeight = function(date1, date2){
             return '{"height":"'+(new Date(date1) - new Date(date2))/ (1000 * 60)+'px"}';
         }
@@ -32,6 +40,12 @@
           offset = Math.floor(offset).toString();
           return offset.toHHMMSS();
         }
+
+
+
+        //fim custom
+
+
 
         vm.mealLogs = [];
         vm.loadPage = loadPage;

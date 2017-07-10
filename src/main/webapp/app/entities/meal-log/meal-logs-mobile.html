@@ -64,7 +64,7 @@
                             <a ui-sref="meal-log-detail({id:mealLog.id})">
                                 <img class="image" data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" alt="mealLog image"/>
                             </a>
-                            <span class="time">{{(mealLog.mealDateTime | date: "EEE, hh:mm" )}}</span>
+                            <span class="time" ng-style="{{vm.getTargetMissTextColor(mealLog)}}">{{(mealLog.mealDateTime | date: "EEE, hh:mm" )}}</span>
                         </div>
                         <div class="timeBar" ng-style="{{vm.getTimeBarHeight(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}};">
 
