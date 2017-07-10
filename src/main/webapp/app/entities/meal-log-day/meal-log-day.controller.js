@@ -16,7 +16,7 @@
 
         vm.mealLogDays = [];
         vm.loadPage = loadPage;
-        vm.itemsPerPage = paginationConstants.itemsPerPage;
+        vm.itemsPerPage = paginationConstants.itemsPerPage * 10;
         vm.page = 0;
         vm.links = {
             last: 0
@@ -28,7 +28,6 @@
 
         var scheduledMeals = [];
 
-        console.log("la vai")
         //primeiro busca os scheduled para fazer os background, depois busca os dias.
         $http.get("/api/scheduled-meals").then(function(data){
                 scheduledMeals = data.data;
@@ -102,7 +101,6 @@
                 function extractItens(data) {
                     var items = new VisDataSet();
                     data.mealLogList.forEach(function(item, i){
-                        console.log(item.mealDateTime)
                         var start = new Date(item.mealDateTime);
                         items.add({
                             id: i,
