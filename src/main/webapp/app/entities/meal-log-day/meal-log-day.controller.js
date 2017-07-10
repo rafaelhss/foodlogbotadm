@@ -110,7 +110,6 @@
                             ' <span style="color:#97B0F8;">' +
                             '<a  onClick="window.open(\'data:'+ item.photoContentType + ';base64,' + item.photo + '\')\">' +
                                 "<img src=\"data:" + item.photoContentType + ";base64," + item.photo + "\" style=\"max-height: 30px;\" alt=\"mealLog image\"/>" +
-                            start +
                             '</a>' +
                              '</span>',
                             start: start,
