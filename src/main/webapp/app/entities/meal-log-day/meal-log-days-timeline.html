@@ -8,5 +8,9 @@
     <div ng-repeat="timelineData in timelineDatas"style="padding:10px;">
         <vis-timeline ng-show="true" data="timelineData" options="timelineOptions"></vis-timeline>
     </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+        <uib-pagination class="pagination-sm" total-items="vm.totalItems" items-per-page="vm.itemsPerPage" ng-model="vm.page" ng-change="vm.transition()"></uib-pagination>
+    </div>
 
 </div>
