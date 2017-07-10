@@ -5,9 +5,9 @@
         .module('foodlogbotadmApp')
         .controller('MealLogDayController', MealLogDayController);
 
-    MealLogDayController.$inject = ['DataUtils', 'MealLogDay', 'ParseLinks', 'AlertService', 'paginationConstants', 'VisDataSet', '$scope'];
+    MealLogDayController.$inject = ['DataUtils', 'MealLogDay', 'ParseLinks', 'AlertService', 'paginationConstants', 'VisDataSet', '$scope', '$http', '$filter'];
 
-    function MealLogDayController(DataUtils, MealLogDay, ParseLinks, AlertService, paginationConstants, VisDataSet, $scope) {
+    function MealLogDayController(DataUtils, MealLogDay, ParseLinks, AlertService, paginationConstants, VisDataSet, $scope, $http, $filter) {
 
         var vm = this;
 
@@ -25,7 +25,19 @@
         vm.reset = reset;
         vm.reverse = true;
 
-        loadAll();
+
+        var scheduledMeals = [];
+
+        console.log("la vai")
+        //primeiro busca os scheduled para fazer os background, depois busca os dias.
+        $http.get("/api/scheduled-meals").then(function(data){
+                scheduledMeals = data.data;
+                loadAll();
+            } , function(error){
+                console.log(error)
+            });
+
+
 
         function loadAll () {
             MealLogDay.query({
@@ -47,15 +59,50 @@
                 $scope.timelineOptions = {
                   //  height:"100%"
                 };
+                // Para cada dia recebido do backend
                 for (var i = 0; i < data.length; i++) {
                     vm.mealLogDays.push(data[i]);
                     var timelineData = {};
-                    timelineData.items = extractItens(data[i]);
+
+                    var items = new VisDataSet();
+
+                    //busca os meallogs do dia
+                    timelineData.items = extractItens(data[i], items);
+
+                    //define os scheduled do dia
+                    timelineData.items = extractBackgroundItens(scheduledMeals, data[i].mealLogDayDate, timelineData.items);
+
                     $scope.timelineDatas.push(timelineData);
+
+
                 }
+
+                function extractBackgroundItens(scheduledMeals, mealLogDayDate, items){
+                    scheduledMeals.forEach(function(item,i){
+                        var data = new Date(mealLogDayDate.toString().replace("00:00:", item.targetTime + ":"));
+                        var start = new Date(data.getTime() - (20*60*1000) );
+                        var end = new Date(data.getTime() + (20*60*1000) );
+                                                items.add({
+                                                    id: i+items.length,
+                                                    content:
+                                                    ' <span style="color:#97B0F8;">' +
+                                                    //'<a  onClick="window.open(\'data:'+ item.photoContentType + ';base64,' + item.photo + '\')\">' +
+                                                    item.name +
+                                                    //    "<img src=\"data:" + item.photoContentType + ";base64," + item.photo + "\" style=\"max-height: 30px;\" alt=\"mealLog image\"/>" +
+                                                    //'</a>' +
+                                                     '</span>',
+                                                    start: start,
+                                                    end: end,
+                                                    type: 'background'
+                                                    });
+                    });
+                    return items;
+                }
+
                 function extractItens(data) {
                     var items = new VisDataSet();
                     data.mealLogList.forEach(function(item, i){
+                        console.log(item.mealDateTime)
                         var start = new Date(item.mealDateTime);
                         items.add({
                             id: i,
@@ -63,14 +110,15 @@
                             ' <span style="color:#97B0F8;">' +
                             '<a  onClick="window.open(\'data:'+ item.photoContentType + ';base64,' + item.photo + '\')\">' +
                                 "<img src=\"data:" + item.photoContentType + ";base64," + item.photo + "\" style=\"max-height: 30px;\" alt=\"mealLog image\"/>" +
+                            start
                             '</a>' +
                              '</span>',
                             start: start,
+
                             type: 'box'
                             });
                     })
                     return items;
-
                 }
             }
 
