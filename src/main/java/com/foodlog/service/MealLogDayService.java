@@ -46,7 +46,10 @@ public class MealLogDayService {
         // trasforma cada dia do mapa em um item da lista
         List<MealLogDay> result = new ArrayList<MealLogDay>(days.values());
 
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        System.out.println(mealLogRepository.count());
+        System.out.println(mealLogRepository.findAll().size());
         //um dia tem em torno de 9 efeicoes. entao o count total esta quase coerente
-        return new PageImpl<MealLogDay>(result, pageable, mealLogRepository.count()/10);
+        return new PageImpl<MealLogDay>(result, pageable, mealLogRepository.count());
     }
 }
