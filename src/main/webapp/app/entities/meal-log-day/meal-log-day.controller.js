@@ -59,8 +59,8 @@
                 $scope.timelineOptions = {
                   //  height:"100%"
                 };
-                // Para cada dia recebido do backend
-                for (var i = 0; i < data.length; i++) {
+                // Para cada dia recebido do backend. de traz pra frente pq o componente pega por ordem de entrada e queremos o maior em cima
+                for (var i = data.length -1; i >=0 ; i--) {
                     vm.mealLogDays.push(data[i]);
                     var timelineData = {};
 
