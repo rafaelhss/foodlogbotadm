@@ -1,0 +1,83 @@
+<div>
+
+    <style>
+       img {
+            border:8px solid #AAAAAA;
+            width:60vw;
+            max-height: 40vh;
+            border-radius: 25px;
+        }
+        .image {
+           position: relative;
+           width:60vw;
+           margin: auto;
+        }
+
+        .time{
+           position: absolute;
+           bottom: 20px;
+           right: 20px;
+           background-color: #DDDDDD;
+           font-size: 200%;
+           border-radius: 10px;
+        }
+        .timeBarInterval{
+           position: relative;
+           margin: auto;
+        }
+        .timeBar{
+           border:1px solid #AAAAAA;
+           background-color: #AAAAAA;
+           position: relative;
+           margin: auto;
+           width:3vw;
+        }
+        table
+        {
+            vertical-align: middle;
+            margin: auto;
+            text-align: center;
+        }
+    </style>
+    <h2>Meal Logs Mobile</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="meal-log.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span >
+                        Create new Meal Log
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div>
+        <table>
+            <tbody infinite-scroll="vm.loadPage(vm.page + 1)" infinite-scroll-disabled="vm.page >= vm.links['last']">
+                <tr ng-repeat="mealLog in vm.mealLogs track by mealLog.id">
+
+                    <td>
+                        <div class="image">
+                            <a ui-sref="meal-log-detail({id:mealLog.id})">
+                                <img data-ng-src="{{'data:' + mealLog.photoContentType + ';base64,' + mealLog.photo}}" alt="mealLog image"/>
+                            </a>
+                            <span class="time">{{(mealLog.mealDateTime | date: "EEE, hh:mm" )}}</span>
+                        </div>
+                        <div class="timeBar" ng-style="{{vm.getTimeBarHeight(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}};">
+
+                        </div>
+                        <div class="timeBarInterval">
+                            {{vm.getTimeInMinutes(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}} mins
+                        </div>
+                        <div class="timeBar" ng-style="{{vm.getTimeBarHeight(mealLog.mealDateTime, vm.mealLogs[$index+1].mealDateTime)}};">
+
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
