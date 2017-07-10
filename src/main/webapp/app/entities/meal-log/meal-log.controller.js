@@ -25,7 +25,6 @@
         }
 
         vm.getTargetMissTextColor = function(meallog){
-            console.log(meallog)
             if(meallog.scheduledMeal != null){
                 return '{"color": "#2bb5bc"}'
             }
