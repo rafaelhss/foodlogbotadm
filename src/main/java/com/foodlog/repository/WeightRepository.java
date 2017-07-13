@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import org.springframework.data.jpa.repository.*;
 
+import java.util.List;
+
 
 /**
  * Spring Data JPA repository for the Weight entity.
@@ -16,4 +18,6 @@ import org.springframework.data.jpa.repository.*;
 @Repository
 public interface WeightRepository extends JpaRepository<Weight,Long> {
     Page<Weight> findByOrderByWeightDateTimeDesc(Pageable pageable);
+    List<Weight> findTop15ByOrderByWeightDateTimeDesc();
+
 }
