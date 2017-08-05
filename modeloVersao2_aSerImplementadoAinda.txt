@@ -1,0 +1,46 @@
+entity Diet {
+	dietName String,
+    creationDate Date
+}
+
+entity ScheduledMeal {
+	mealName String,
+    description String,
+    targetTime String
+}
+
+relationship OneToMany {
+	Diet{scheduledMeal} to ScheduledMeal
+}
+
+entity Patient {
+	patientName String,
+    mobileId String
+}
+
+relationship OneToOne {
+	Diet{dietOwner} to Patient
+}
+
+relationship OneToOne {
+	Patient{currentDiet} to Diet
+}
+
+entity MealLog {
+	photo Blob,
+    mealLogDateTime ZonedDateTime,
+}
+
+relationship OneToOne {
+	MealLog{scheduledMeal} to ScheduledMeal
+}
+
+relationship OneToOne {
+	MealLog{mealLogOwner} to Patient
+}
+
+
+// Set pagination options
+paginate MealLog with infinite-scroll
+paginate Diet, ScheduledMeal, Patient with pagination
+
