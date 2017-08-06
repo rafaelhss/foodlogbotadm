@@ -26,6 +26,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.*;
@@ -100,8 +102,18 @@ public class BotResource {
 
         weightRepository.save(weight);
 
+        List<Weight> weights = weightRepository.findTop15ByOrderByWeightDateTimeDesc();
+
+
+        String message = "Peso (" + value + ") salvo com sucesso.";
+
+        for(Weight w : weights){
+            message += System.lineSeparator() + w.getValue() + " - "  + w.getWeightDateTime() + System.lineSeparator();
+        }
+
+
         try {
-            new Sender(BOT_ID).sendResponse(user_id, "Peso (" + value + ") salvo com sucesso.");
+            new Sender(BOT_ID).sendResponse(user_id, message);
         } catch (IOException e) {
             e.printStackTrace();
         }
