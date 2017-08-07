@@ -10,6 +10,8 @@ import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -208,7 +211,7 @@ public class BotResource {
             new Sender(BOT_ID).sendResponse(user_id, message);
 
 
-        } catch (IOException ex) {
+        } catch (IOException | ConstraintViolationException ex) {
             Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
