@@ -119,7 +119,7 @@ public class BotResource {
         try {
             return update.getMessage().getText().trim().toLowerCase().equals("timeline");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Erro ao tentar achar a palavra timeline. Segue o jogo:  " + e.getMessage());
             return false;
         }
     }
