@@ -104,6 +104,8 @@ public class BotResource {
 
     private void processTimeline(Update update, int user_id) {
         try {
+            new Sender(BOT_ID).sendResponse(user_id, "Sua timeline sera gerada...");
+
             //chama o image report para mandar o peso
             HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/timeline").openConnection();
             conn.setRequestMethod("GET");
