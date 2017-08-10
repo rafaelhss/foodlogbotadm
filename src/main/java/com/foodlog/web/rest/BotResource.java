@@ -88,6 +88,8 @@ public class BotResource {
                 processaProx(update, user_id);
             } else if(checkForWeight(update)) {
                 processWeight(update, user_id);
+            } else if(checkForTimeline(update)) {
+                processTimeline(update, user_id);
             } else {
                     processPhoto(update, user_id);
             }
@@ -97,6 +99,26 @@ public class BotResource {
 
         } else {
             System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
+        }
+    }
+
+    private void processTimeline(Update update, int user_id) {
+        try {
+            //chama o image report para mandar o peso
+            HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/timeline").openConnection();
+            conn.setRequestMethod("GET");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean checkForTimeline(Update update) {
+        try {
+            return update.getMessage().getText().trim().toLowerCase().equals("timeline");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
