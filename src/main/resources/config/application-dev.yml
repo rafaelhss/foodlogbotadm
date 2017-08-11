@@ -29,6 +29,9 @@ spring:
         url: jdbc:postgresql://172.17.0.2:5432/postgres
         username: postgres
         password: frubbs11
+        max-wait: 10000
+        max-active: 5
+        test-on-borrow: true
     jpa:
         database-platform: io.github.jhipster.domain.util.FixedPostgreSQL82Dialect
         database: POSTGRESQL
@@ -39,6 +42,8 @@ spring:
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: true
             #hibernate.hbm2ddl.auto: update
+
+
     mail:
         host: localhost
         port: 25

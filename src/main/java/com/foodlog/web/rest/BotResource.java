@@ -156,6 +156,7 @@ public class BotResource {
     }
 
     private boolean checkForWeight(Update update) {
+
         String regex = "^[+-]?([0-9]*[.])?[0-9]+$";
         // Create a Pattern object
         Pattern r = Pattern.compile(regex);
@@ -165,6 +166,10 @@ public class BotResource {
             Matcher m = r.matcher(update.getMessage().getText());
             return m.find();
         }
+
+
+
+
         return false;
     }
 
