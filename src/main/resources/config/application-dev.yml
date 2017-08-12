@@ -30,7 +30,7 @@ spring:
         username: postgres
         password: frubbs11
         max-wait: 10000
-        max-active: 5
+        max-active: 2
         test-on-borrow: true
     jpa:
         database-platform: io.github.jhipster.domain.util.FixedPostgreSQL82Dialect
