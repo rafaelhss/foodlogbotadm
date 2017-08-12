@@ -24,6 +24,9 @@ spring:
         url: jdbc:postgresql://localhost:5432/foodlogbotadm
         username: foodlogbotadm
         password:
+        max-wait: 10000
+        max-active: 5
+        test-on-borrow: true
     jpa:
         database-platform: io.github.jhipster.domain.util.FixedPostgreSQL82Dialect
         database: POSTGRESQL
