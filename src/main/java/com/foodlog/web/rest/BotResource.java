@@ -3,6 +3,8 @@ package com.foodlog.web.rest;
 import com.foodlog.domain.MealLog;
 import com.foodlog.domain.ScheduledMeal;
 import com.foodlog.domain.Weight;
+import com.foodlog.emoji.string.*;
+import com.foodlog.emoji.string.Objects;
 import com.foodlog.repository.MealLogRepository;
 import com.foodlog.repository.ScheduledMealRepository;
 import com.foodlog.repository.WeightRepository;
@@ -69,7 +71,7 @@ public class BotResource {
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
-    @RequestMapping(method= RequestMethod.POST, value="/update")
+     @RequestMapping(method= RequestMethod.POST, value="/update")
     public void ReceberUpdate(@RequestBody Update update){
 
         receivedMessages = (Map<Long, Long>) request.getSession().getAttribute("receivedMessages");
@@ -223,11 +225,13 @@ public class BotResource {
 
                 MealLog mealLog = mealLogFactory.create(update);
                 MealLog mealLog1 = mealLogRepository.save(mealLog);
-                message = "Foto salva com sucesso, ";
+                message = People.BLACK_SMILING_FACE.toString();
                 if (mealLog1.getScheduledMeal() == null) {
-                    message += "sem classificação";
+                    message += People.THUMBS_UP.toString();
                 } else {
-                    message += "como " + mealLog1.getScheduledMeal().getName();
+                    message += People.RIGHT_POINTING_BACKHAND_INDEX.toString()
+                        + " "
+                        + mealLog1.getScheduledMeal().getName();
                 }
 
                 message += calculateMealIntervals();
@@ -296,7 +300,10 @@ public class BotResource {
         System.out.println("hours:" + hours);
 
         if(avgSeconds > 1) {
-            return ". Media de intervalo: " + hours + "h:"+ minutes + "m entre " + (int) ++count + " refeicoes. (Scheduled: " + calcScheduledAvgIntervals() +")";
+            return "\n" + Objects.STOP_WATCH.toString()
+                + hours + "h:"+ minutes + "m ["
+                + (int) ++count + "] (" + Objects.ALARM_CLOCK.toString()
+                + calcScheduledAvgIntervals() +")";
         } else {
             return "";
         }
