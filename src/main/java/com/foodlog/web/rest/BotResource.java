@@ -302,7 +302,7 @@ public class BotResource {
         if(avgSeconds > 1) {
             return "\n" + Objects.STOP_WATCH.toString()
                 + hours + "h:"+ minutes + "m ["
-                + (int) ++count + "] (" + Objects.ALARM_CLOCK.toString()
+                + (int) ++count + "/" + scheduledMealRepository.count() + "] (" + Objects.ALARM_CLOCK.toString()
                 + calcScheduledAvgIntervals() +")";
         } else {
             return "";
