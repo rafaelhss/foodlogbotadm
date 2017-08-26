@@ -14,5 +14,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="scheduled_meal"/>
 
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="meal_log"
+                                 constraintName="fk_meal_log_user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"/>
+
     </changeSet>
 </databaseChangeLog>

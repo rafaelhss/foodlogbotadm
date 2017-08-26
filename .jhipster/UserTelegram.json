@@ -1,0 +1,32 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "user",
+            "otherEntityName": "user",
+            "relationshipType": "one-to-one",
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "userTelegram"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "telegramId",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "first_name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "last_name",
+            "fieldType": "String"
+        }
+    ],
+    "changelogDate": "20170826033609",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "user_telegram",
+    "pagination": "no"
+}

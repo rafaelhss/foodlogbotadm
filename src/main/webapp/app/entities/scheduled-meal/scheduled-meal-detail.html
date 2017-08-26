@@ -16,9 +16,9 @@
         <dd>
             <span>{{vm.scheduledMeal.targetTime}}</span>
         </dd>
-        <dt><span>Client</span></dt>
+        <dt><span>User</span></dt>
         <dd>
-            <a ui-sref="client-detail({id:vm.scheduledMeal.client.id})">{{vm.scheduledMeal.client.name}}</a>
+            {{vm.scheduledMeal.user.login}}
         </dd>
     </dl>
 

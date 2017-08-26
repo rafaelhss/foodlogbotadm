@@ -9,44 +9,44 @@
 
     function stateConfig($stateProvider) {
         $stateProvider
-        .state('client', {
+        .state('user-telegram', {
             parent: 'entity',
-            url: '/client',
+            url: '/user-telegram',
             data: {
                 authorities: ['ROLE_USER'],
-                pageTitle: 'Clients'
+                pageTitle: 'UserTelegrams'
             },
             views: {
                 'content@': {
-                    templateUrl: 'app/entities/client/clients.html',
-                    controller: 'ClientController',
+                    templateUrl: 'app/entities/user-telegram/user-telegrams.html',
+                    controller: 'UserTelegramController',
                     controllerAs: 'vm'
                 }
             },
             resolve: {
             }
         })
-        .state('client-detail', {
-            parent: 'client',
-            url: '/client/{id}',
+        .state('user-telegram-detail', {
+            parent: 'user-telegram',
+            url: '/user-telegram/{id}',
             data: {
                 authorities: ['ROLE_USER'],
-                pageTitle: 'Client'
+                pageTitle: 'UserTelegram'
             },
             views: {
                 'content@': {
-                    templateUrl: 'app/entities/client/client-detail.html',
-                    controller: 'ClientDetailController',
+                    templateUrl: 'app/entities/user-telegram/user-telegram-detail.html',
+                    controller: 'UserTelegramDetailController',
                     controllerAs: 'vm'
                 }
             },
             resolve: {
-                entity: ['$stateParams', 'Client', function($stateParams, Client) {
-                    return Client.get({id : $stateParams.id}).$promise;
+                entity: ['$stateParams', 'UserTelegram', function($stateParams, UserTelegram) {
+                    return UserTelegram.get({id : $stateParams.id}).$promise;
                 }],
                 previousState: ["$state", function ($state) {
                     var currentStateData = {
-                        name: $state.current.name || 'client',
+                        name: $state.current.name || 'user-telegram',
                         params: $state.params,
                         url: $state.href($state.current.name, $state.params)
                     };
@@ -54,22 +54,22 @@
                 }]
             }
         })
-        .state('client-detail.edit', {
-            parent: 'client-detail',
+        .state('user-telegram-detail.edit', {
+            parent: 'user-telegram-detail',
             url: '/detail/edit',
             data: {
                 authorities: ['ROLE_USER']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
-                    templateUrl: 'app/entities/client/client-dialog.html',
-                    controller: 'ClientDialogController',
+                    templateUrl: 'app/entities/user-telegram/user-telegram-dialog.html',
+                    controller: 'UserTelegramDialogController',
                     controllerAs: 'vm',
                     backdrop: 'static',
                     size: 'lg',
                     resolve: {
-                        entity: ['Client', function(Client) {
-                            return Client.get({id : $stateParams.id}).$promise;
+                        entity: ['UserTelegram', function(UserTelegram) {
+                            return UserTelegram.get({id : $stateParams.id}).$promise;
                         }]
                     }
                 }).result.then(function() {
@@ -79,16 +79,16 @@
                 });
             }]
         })
-        .state('client.new', {
-            parent: 'client',
+        .state('user-telegram.new', {
+            parent: 'user-telegram',
             url: '/new',
             data: {
                 authorities: ['ROLE_USER']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
-                    templateUrl: 'app/entities/client/client-dialog.html',
-                    controller: 'ClientDialogController',
+                    templateUrl: 'app/entities/user-telegram/user-telegram-dialog.html',
+                    controller: 'UserTelegramDialogController',
                     controllerAs: 'vm',
                     backdrop: 'static',
                     size: 'lg',
@@ -96,62 +96,63 @@
                         entity: function () {
                             return {
                                 telegramId: null,
-                                name: null,
+                                first_name: null,
+                                last_name: null,
                                 id: null
                             };
                         }
                     }
                 }).result.then(function() {
-                    $state.go('client', null, { reload: 'client' });
+                    $state.go('user-telegram', null, { reload: 'user-telegram' });
                 }, function() {
-                    $state.go('client');
+                    $state.go('user-telegram');
                 });
             }]
         })
-        .state('client.edit', {
-            parent: 'client',
+        .state('user-telegram.edit', {
+            parent: 'user-telegram',
             url: '/{id}/edit',
             data: {
                 authorities: ['ROLE_USER']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
-                    templateUrl: 'app/entities/client/client-dialog.html',
-                    controller: 'ClientDialogController',
+                    templateUrl: 'app/entities/user-telegram/user-telegram-dialog.html',
+                    controller: 'UserTelegramDialogController',
                     controllerAs: 'vm',
                     backdrop: 'static',
                     size: 'lg',
                     resolve: {
-                        entity: ['Client', function(Client) {
-                            return Client.get({id : $stateParams.id}).$promise;
+                        entity: ['UserTelegram', function(UserTelegram) {
+                            return UserTelegram.get({id : $stateParams.id}).$promise;
                         }]
                     }
                 }).result.then(function() {
-                    $state.go('client', null, { reload: 'client' });
+                    $state.go('user-telegram', null, { reload: 'user-telegram' });
                 }, function() {
                     $state.go('^');
                 });
             }]
         })
-        .state('client.delete', {
-            parent: 'client',
+        .state('user-telegram.delete', {
+            parent: 'user-telegram',
             url: '/{id}/delete',
             data: {
                 authorities: ['ROLE_USER']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
-                    templateUrl: 'app/entities/client/client-delete-dialog.html',
-                    controller: 'ClientDeleteController',
+                    templateUrl: 'app/entities/user-telegram/user-telegram-delete-dialog.html',
+                    controller: 'UserTelegramDeleteController',
                     controllerAs: 'vm',
                     size: 'md',
                     resolve: {
-                        entity: ['Client', function(Client) {
-                            return Client.get({id : $stateParams.id}).$promise;
+                        entity: ['UserTelegram', function(UserTelegram) {
+                            return UserTelegram.get({id : $stateParams.id}).$promise;
                         }]
                     }
                 }).result.then(function() {
-                    $state.go('client', null, { reload: 'client' });
+                    $state.go('user-telegram', null, { reload: 'user-telegram' });
                 }, function() {
                     $state.go('^');
                 });

@@ -29,6 +29,10 @@
         <dd>
             <a ui-sref="scheduled-meal-detail({id:vm.mealLog.scheduledMeal.id})">{{vm.mealLog.scheduledMeal.name}}</a>
         </dd>
+        <dt><span>User</span></dt>
+        <dd>
+            {{vm.mealLog.user.login}}
+        </dd>
     </dl>
 
     <button type="submit"

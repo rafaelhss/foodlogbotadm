@@ -26,23 +26,6 @@
             resolve: {
             }
         })
-        .state('meal-log-mobile', {
-            parent: 'entity',
-            url: '/meal-log-mobile',
-            data: {
-                authorities: ['ROLE_USER'],
-                pageTitle: 'MealLogs'
-            },
-            views: {
-                'content@': {
-                    templateUrl: 'app/entities/meal-log/meal-logs-mobile.html',
-                    controller: 'MealLogController',
-                    controllerAs: 'vm'
-                }
-            },
-            resolve: {
-            }
-        })
         .state('meal-log-detail', {
             parent: 'meal-log',
             url: '/meal-log/{id}',

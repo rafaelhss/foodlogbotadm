@@ -24,6 +24,7 @@
                     <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="updateId"><span>Update Id</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="scheduledMeal.name"><span>Scheduled Meal</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="user.login"><span>User</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
@@ -41,6 +42,9 @@
                     <td>{{mealLog.updateId}}</td>
                     <td>
                         <a ui-sref="scheduled-meal-detail({id:mealLog.scheduledMeal.id})">{{mealLog.scheduledMeal.name}}</a>
+                    </td>
+                    <td>
+                        {{mealLog.user.login}}
                     </td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">

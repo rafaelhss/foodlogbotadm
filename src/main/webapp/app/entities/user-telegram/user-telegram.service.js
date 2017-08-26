@@ -2,12 +2,12 @@
     'use strict';
     angular
         .module('foodlogbotadmApp')
-        .factory('Client', Client);
+        .factory('UserTelegram', UserTelegram);
 
-    Client.$inject = ['$resource'];
+    UserTelegram.$inject = ['$resource'];
 
-    function Client ($resource) {
-        var resourceUrl =  'api/clients/:id';
+    function UserTelegram ($resource) {
+        var resourceUrl =  'api/user-telegrams/:id';
 
         return $resource(resourceUrl, {}, {
             'query': { method: 'GET', isArray: true},

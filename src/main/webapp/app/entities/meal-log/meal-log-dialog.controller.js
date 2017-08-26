@@ -5,9 +5,9 @@
         .module('foodlogbotadmApp')
         .controller('MealLogDialogController', MealLogDialogController);
 
-    MealLogDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'DataUtils', 'entity', 'MealLog', 'ScheduledMeal'];
+    MealLogDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'DataUtils', 'entity', 'MealLog', 'ScheduledMeal', 'User'];
 
-    function MealLogDialogController ($timeout, $scope, $stateParams, $uibModalInstance, DataUtils, entity, MealLog, ScheduledMeal) {
+    function MealLogDialogController ($timeout, $scope, $stateParams, $uibModalInstance, DataUtils, entity, MealLog, ScheduledMeal, User) {
         var vm = this;
 
         vm.mealLog = entity;
@@ -18,6 +18,7 @@
         vm.openFile = DataUtils.openFile;
         vm.save = save;
         vm.scheduledmeals = ScheduledMeal.query();
+        vm.users = User.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();

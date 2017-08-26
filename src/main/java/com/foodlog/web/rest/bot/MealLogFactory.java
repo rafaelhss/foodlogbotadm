@@ -3,7 +3,12 @@ package com.foodlog.web.rest.bot;
 
 import com.foodlog.domain.MealLog;
 import com.foodlog.domain.ScheduledMeal;
+import com.foodlog.domain.User;
 import com.foodlog.repository.ScheduledMealRepository;
+import com.foodlog.repository.UserRepository;
+import com.foodlog.repository.UserTelegramRepository;
+import com.foodlog.security.DomainUserDetailsService;
+import com.foodlog.security.SecurityUtils;
 import com.foodlog.web.rest.bot.model.GetFile;
 import com.foodlog.web.rest.bot.model.Update;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -30,7 +37,10 @@ public class MealLogFactory {
     @Autowired
     ScheduledMealRepository scheduledMealRepository;
 
-    public MealLog create(Update update) {
+    @Autowired
+    UserTelegramRepository userTelegramRepository;
+
+    private MealLog getBaseMealLog(Update update, User current){
         MealLog mealLog = new MealLog();
 
         //Date = now
@@ -42,26 +52,35 @@ public class MealLogFactory {
             mealLog.setComment((caption.trim()));
         }
 
+        //ScheduledMeal
+        ScheduledMeal scheduledMeal = defineScheduledMeal(mealLog, current);
+        mealLog.setScheduledMeal(scheduledMeal);
+
+        mealLog.setUpdateId(update.getUpdate_id());
+
+
+        mealLog.setUser(current);
+
+        return mealLog;
+    }
+
+    public MealLog create(Update update, User current) {
+
+        MealLog mealLog = getBaseMealLog(update, current);
+
         //Photo
         byte[] imageBytes = getPicture(update);
         mealLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imageBytes)));
         mealLog.setPhotoContentType("image/jpg");
 
-
-        //ScheduledMeal
-        ScheduledMeal scheduledMeal = defineScheduledMeal(mealLog);
-        mealLog.setScheduledMeal(scheduledMeal);
-
-        mealLog.setUpdateId(update.getUpdate_id());
-
         return mealLog;
     }
 
-    private ScheduledMeal defineScheduledMeal(MealLog mealLog) {
+    private ScheduledMeal defineScheduledMeal(MealLog mealLog, User currentUser) {
         try {
 
             if(mealLog.getComment() != null && !mealLog.getComment().isEmpty()){
-                List<ScheduledMeal> scheduledMeals = scheduledMealRepository.findByName(mealLog.getComment());
+                List<ScheduledMeal> scheduledMeals = scheduledMealRepository.findByNameAndUser(mealLog.getComment(), currentUser);
                 if(scheduledMeals != null && !scheduledMeals.isEmpty()){
                     return scheduledMeals.get(0);
                 }
@@ -113,5 +132,23 @@ public class MealLogFactory {
         String file_path = getFile.getResult().getFile_path();
         URI getBytesurl = ApiUrlBuilder.getBytesUrl(file_path);
         return restTemplate.getForObject(getBytesurl, byte[].class);
+    }
+
+    public MealLog createTextLog(Update update, User current) {
+        MealLog mealLog = getBaseMealLog(update, current);
+
+        String texto = update.getMessage().getText();
+        if(texto.toLowerCase().indexOf("meal:") == 0){
+            texto = texto.substring("meal:".length());
+        }
+
+        //Photo
+        byte[] imageBytes = new Util().convertTextToGraphic(texto, new Font("Arial", Font.PLAIN, 14));
+
+        mealLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imageBytes)));
+        mealLog.setPhotoContentType("image/jpg");
+
+        return mealLog;
+
     }
 }

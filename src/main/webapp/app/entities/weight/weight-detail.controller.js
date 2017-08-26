@@ -5,9 +5,9 @@
         .module('foodlogbotadmApp')
         .controller('WeightDetailController', WeightDetailController);
 
-    WeightDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Weight'];
+    WeightDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'entity', 'Weight', 'User'];
 
-    function WeightDetailController($scope, $rootScope, $stateParams, previousState, entity, Weight) {
+    function WeightDetailController($scope, $rootScope, $stateParams, previousState, entity, Weight, User) {
         var vm = this;
 
         vm.weight = entity;

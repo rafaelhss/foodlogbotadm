@@ -2,10 +2,12 @@
     "fluentMethods": true,
     "relationships": [
         {
-            "relationshipName": "client",
-            "otherEntityName": "client",
+            "relationshipName": "user",
+            "otherEntityName": "user",
             "relationshipType": "many-to-one",
-            "otherEntityField": "name"
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "scheduledMeal"
         }
     ],
     "fields": [

@@ -3,14 +3,14 @@
 
     angular
         .module('foodlogbotadmApp')
-        .controller('ClientDeleteController',ClientDeleteController);
+        .controller('UserTelegramDeleteController',UserTelegramDeleteController);
 
-    ClientDeleteController.$inject = ['$uibModalInstance', 'entity', 'Client'];
+    UserTelegramDeleteController.$inject = ['$uibModalInstance', 'entity', 'UserTelegram'];
 
-    function ClientDeleteController($uibModalInstance, entity, Client) {
+    function UserTelegramDeleteController($uibModalInstance, entity, UserTelegram) {
         var vm = this;
 
-        vm.client = entity;
+        vm.userTelegram = entity;
         vm.clear = clear;
         vm.confirmDelete = confirmDelete;
 
@@ -19,7 +19,7 @@
         }
 
         function confirmDelete (id) {
-            Client.delete({id: id},
+            UserTelegram.delete({id: id},
                 function () {
                     $uibModalInstance.close(true);
                 });

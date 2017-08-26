@@ -36,11 +36,14 @@ public class MealLog implements Serializable {
     @Column(name = "jhi_comment")
     private String comment;
 
-    @Column(name = "update_id", unique = true, nullable = true)
+    @Column(name = "update_id")
     private Long updateId;
 
     @ManyToOne
     private ScheduledMeal scheduledMeal;
+
+    @ManyToOne
+    private User user;
 
     public Long getId() {
         return id;
@@ -126,6 +129,19 @@ public class MealLog implements Serializable {
 
     public void setScheduledMeal(ScheduledMeal scheduledMeal) {
         this.scheduledMeal = scheduledMeal;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public MealLog user(User user) {
+        this.user = user;
+        return this;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

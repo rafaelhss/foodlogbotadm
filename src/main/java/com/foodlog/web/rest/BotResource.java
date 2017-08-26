@@ -1,12 +1,11 @@
 package com.foodlog.web.rest;
 
-import com.foodlog.domain.MealLog;
-import com.foodlog.domain.ScheduledMeal;
-import com.foodlog.domain.Weight;
+import com.foodlog.domain.*;
 import com.foodlog.emoji.string.*;
 import com.foodlog.emoji.string.Objects;
 import com.foodlog.repository.MealLogRepository;
 import com.foodlog.repository.ScheduledMealRepository;
+import com.foodlog.repository.UserTelegramRepository;
 import com.foodlog.repository.WeightRepository;
 import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
@@ -69,6 +68,9 @@ public class BotResource {
     @Autowired
     private WeightRepository weightRepository;
 
+    @Autowired
+    private UserTelegramRepository userTelegramRepository;
+
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
      @RequestMapping(method= RequestMethod.POST, value="/update")
@@ -92,8 +94,10 @@ public class BotResource {
                 processWeight(update, user_id);
             } else if(checkForTimeline(update)) {
                 processTimeline(update, user_id);
+            } else if(checkForTextLog(update)){
+                processTextLog(update, user_id);
             } else {
-                    processPhoto(update, user_id);
+                processPhoto(update, user_id);
             }
 
             receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
@@ -104,12 +108,24 @@ public class BotResource {
         }
     }
 
+    private void processTextLog(Update update, int user_id) {
+
+        MealLog mealLog = mealLogFactory.createTextLog(update, getCurrentUser(update));
+
+        String message = saveMealLogAndGenerateMessage(update, mealLog);
+        try {
+            new Sender(BOT_ID).sendResponse(user_id, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void processTimeline(Update update, int user_id) {
         try {
             new Sender(BOT_ID).sendResponse(user_id, "Sua timeline sera gerada...");
 
             //chama o image report para mandar o peso
-            HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/timeline").openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/timeline?userid=" + getCurrentUser(update).getId()).openConnection();
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } catch (Exception e) {
@@ -133,13 +149,17 @@ public class BotResource {
         weight.setWeightDateTime(Instant.now());
         weight.setUpdateId(update.getUpdate_id());
 
+        User currentUser = getCurrentUser(update);
+        weight.setUser(currentUser);
+
         weightRepository.save(weight);
 
-        List<Weight> weights = weightRepository.findTop15ByOrderByWeightDateTimeDesc();
 
 
         String message = "Peso (" + value + ") salvo com sucesso.";
 /*
+        List<Weight> weights = weightRepository.findTop15ByUserOrderByWeightDateTimeDesc(getCurrentUser(update));
+
         for(Weight w : weights){
             message += System.lineSeparator() + w.getValue() + " - "  + w.getWeightDateTime() + System.lineSeparator();
         }
@@ -148,7 +168,7 @@ public class BotResource {
         try {
             new Sender(BOT_ID).sendResponse(user_id, message);
             //chama o image report para mandar o peso
-            HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/").openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/?userid=" + currentUser.getId()).openConnection();
             conn.setRequestMethod("GET");
             BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -157,9 +177,7 @@ public class BotResource {
         }
     }
 
-    private boolean checkForWeight(Update update) {
-
-        String regex = "^[+-]?([0-9]*[.])?[0-9]+$";
+    private boolean checkRegex(Update update, String regex){
         // Create a Pattern object
         Pattern r = Pattern.compile(regex);
 
@@ -168,11 +186,20 @@ public class BotResource {
             Matcher m = r.matcher(update.getMessage().getText());
             return m.find();
         }
-
-
-
-
         return false;
+    }
+    private boolean checkForWeight(Update update) {
+        return checkRegex(update, "^[+-]?([0-9]*[.])?[0-9]+$");
+    }
+
+    private boolean checkForTextLog(Update update) {
+        //return checkRegex(update, "^([0-1]\\d|2[0-3]):([0-5]\\d).*");  //verifica xx:xx no comeco
+        try {
+            return update.getMessage().getText().toLowerCase().indexOf("meal:") == 0;
+        } catch (Exception e){
+            return false;
+        }
+
     }
 
     private void processaProx(Update update, int user_id) {
@@ -183,7 +210,8 @@ public class BotResource {
         ScheduledMeal next = null;
 
         try {
-            for (ScheduledMeal scheduledMeal : scheduledMealRepository.findAll()) {
+            User current = getCurrentUser(update);
+            for (ScheduledMeal scheduledMeal : scheduledMealRepository.findByUser(current)) {
                 if(getZonedTargetTime(scheduledMeal).isAfter(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")))
                     && getZonedTargetTime(scheduledMeal).isBefore(nextTime)) {
                     next = scheduledMeal;
@@ -202,6 +230,10 @@ public class BotResource {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private User getCurrentUser(Update update) {
+        return userTelegramRepository.findOneByTelegramId(update.getMessage().getFrom().getId()).getUser();
     }
 
     private ZonedDateTime getZonedTargetTime(ScheduledMeal scheduledMeal) {
@@ -223,18 +255,8 @@ public class BotResource {
             //testa se recebeu foto
             if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
-                MealLog mealLog = mealLogFactory.create(update);
-                MealLog mealLog1 = mealLogRepository.save(mealLog);
-                message = People.BLACK_SMILING_FACE.toString();
-                if (mealLog1.getScheduledMeal() == null) {
-                    message += People.THUMBS_UP.toString();
-                } else {
-                    message += People.RIGHT_POINTING_BACKHAND_INDEX.toString()
-                        + " "
-                        + mealLog1.getScheduledMeal().getName();
-                }
-
-                message += calculateMealIntervals();
+                MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
+                message = saveMealLogAndGenerateMessage(update, mealLog);
 
             } else {
                 System.out.println("nao veio foto");
@@ -249,7 +271,23 @@ public class BotResource {
         }
     }
 
-    private String calculateMealIntervals() {
+    private String saveMealLogAndGenerateMessage(@RequestBody Update update, MealLog mealLog) {
+        String message;
+        MealLog mealLog1 = mealLogRepository.save(mealLog);
+        message = People.BLACK_SMILING_FACE.toString();
+        if (mealLog1.getScheduledMeal() == null) {
+            message += People.THUMBS_UP.toString();
+        } else {
+            message += People.RIGHT_POINTING_BACKHAND_INDEX.toString()
+                + " "
+                + mealLog1.getScheduledMeal().getName();
+        }
+
+        message += calculateMealIntervals(getCurrentUser(update));
+        return message;
+    }
+
+    private String calculateMealIntervals(User currentUser) {
 
 
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX: " + Instant.now().truncatedTo(ChronoUnit.DAYS));
@@ -258,7 +296,7 @@ public class BotResource {
         System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")):" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")));
         System.out.println("ZonedDateTime.now(ZoneId.of(\"America/Sao_Paulo\")).toInstant():" + ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant());
 
-        List<MealLog> mealLogs2Days = mealLogRepository.findByMealDateTimeAfterOrderByMealDateTimeDesc(now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS));
+        List<MealLog> mealLogs2Days = mealLogRepository.findByUserAndMealDateTimeAfterOrderByMealDateTimeDesc(currentUser, now.truncatedTo(ChronoUnit.DAYS).minus(2, ChronoUnit.DAYS));
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         float secondsSum = 0;
@@ -302,7 +340,7 @@ public class BotResource {
         if(avgSeconds > 1) {
             return "\n" + Objects.STOP_WATCH.toString()
                 + hours + "h:"+ minutes + "m ["
-                + (int) ++count + "/" + scheduledMealRepository.count() + "] (" + Objects.ALARM_CLOCK.toString()
+                + (int) ++count + "/" + scheduledMealRepository.findByUser(currentUser).size() + "] (" + Objects.ALARM_CLOCK.toString() //TODO arrumar
                 + calcScheduledAvgIntervals() +")";
         } else {
             return "";

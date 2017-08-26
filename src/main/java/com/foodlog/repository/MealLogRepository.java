@@ -1,6 +1,7 @@
 package com.foodlog.repository;
 
 import com.foodlog.domain.MealLog;
+import com.foodlog.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -8,9 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.*;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
-
 
 /**
  * Spring Data JPA repository for the MealLog entity.
@@ -18,6 +17,11 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface MealLogRepository extends JpaRepository<MealLog,Long> {
-    Page<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
-    List<MealLog> findByMealDateTimeAfterOrderByMealDateTimeDesc(Instant today);
+
+    @Query("select meal_log from MealLog meal_log where meal_log.user.login = ?#{principal.username}")
+    Page<MealLog> findByUserIsCurrentUser(Pageable pageable);
+
+    List<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
+
+    List<MealLog> findByUserAndMealDateTimeAfterOrderByMealDateTimeDesc(User user, Instant minus);
 }

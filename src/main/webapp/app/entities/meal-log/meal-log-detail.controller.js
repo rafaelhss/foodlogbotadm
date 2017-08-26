@@ -5,9 +5,9 @@
         .module('foodlogbotadmApp')
         .controller('MealLogDetailController', MealLogDetailController);
 
-    MealLogDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'DataUtils', 'entity', 'MealLog', 'ScheduledMeal'];
+    MealLogDetailController.$inject = ['$scope', '$rootScope', '$stateParams', 'previousState', 'DataUtils', 'entity', 'MealLog', 'ScheduledMeal', 'User'];
 
-    function MealLogDetailController($scope, $rootScope, $stateParams, previousState, DataUtils, entity, MealLog, ScheduledMeal) {
+    function MealLogDetailController($scope, $rootScope, $stateParams, previousState, DataUtils, entity, MealLog, ScheduledMeal, User) {
         var vm = this;
 
         vm.mealLog = entity;

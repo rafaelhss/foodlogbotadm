@@ -1,14 +1,12 @@
 package com.foodlog.repository;
 
 import com.foodlog.domain.ScheduledMeal;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.foodlog.domain.User;
+import org.hibernate.engine.jdbc.connections.internal.PooledConnections;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.jpa.repository.*;
-
 import java.util.List;
-
 
 /**
  * Spring Data JPA repository for the ScheduledMeal entity.
@@ -16,7 +14,14 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Repository
 public interface ScheduledMealRepository extends JpaRepository<ScheduledMeal,Long> {
-    public List<ScheduledMeal> findByName(String name);
-    List<ScheduledMeal> findByOrderByTargetTime();
+
+    @Query("select scheduled_meal from ScheduledMeal scheduled_meal where scheduled_meal.user.login = ?#{principal.username}")
+    List<ScheduledMeal> findByUserIsCurrentUser();
+
+    List<ScheduledMeal> findByUser(User current);
+
     List<ScheduledMeal> findByOrderByTargetTimeDesc();
+
+    List<ScheduledMeal> findByNameAndUser(String comment, User currentUser);
+
 }

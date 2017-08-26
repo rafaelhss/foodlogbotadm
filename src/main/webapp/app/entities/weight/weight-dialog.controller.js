@@ -5,9 +5,9 @@
         .module('foodlogbotadmApp')
         .controller('WeightDialogController', WeightDialogController);
 
-    WeightDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Weight'];
+    WeightDialogController.$inject = ['$timeout', '$scope', '$stateParams', '$uibModalInstance', 'entity', 'Weight', 'User'];
 
-    function WeightDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Weight) {
+    function WeightDialogController ($timeout, $scope, $stateParams, $uibModalInstance, entity, Weight, User) {
         var vm = this;
 
         vm.weight = entity;
@@ -15,6 +15,7 @@
         vm.datePickerOpenStatus = {};
         vm.openCalendar = openCalendar;
         vm.save = save;
+        vm.users = User.query();
 
         $timeout(function (){
             angular.element('.form-group:eq(1)>input').focus();
