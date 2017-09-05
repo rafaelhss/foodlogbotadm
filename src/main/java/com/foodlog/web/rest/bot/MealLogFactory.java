@@ -115,7 +115,7 @@ public class MealLogFactory {
     }
 
 
-    private byte[] getPicture(Update update) {
+    public byte[] getPicture(Update update) {
         int id = update.getMessage().getPhoto().size() -1 ;
         String file_id = update.getMessage().getPhoto().get(id).getFile_id();
 

@@ -13,7 +13,15 @@ import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.objdetect.Objdetect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpRequest;
@@ -22,8 +30,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -255,8 +267,15 @@ public class BotResource {
             //testa se recebeu foto
             if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
-                MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
-                message = saveMealLogAndGenerateMessage(update, mealLog);
+                if(getPeopleInPhoto(update) > 0){
+                    message = "achei " + getPeopleInPhoto(update) + " pessoas na foto. Nada fiz ainda";
+                } else {
+
+                    MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
+                    message = saveMealLogAndGenerateMessage(update, mealLog);
+
+                    message += "   (getPeopleInPhoto(update):" + getPeopleInPhoto(update);
+                }
 
             } else {
                 System.out.println("nao veio foto");
@@ -268,6 +287,63 @@ public class BotResource {
 
         } catch (IOException | ConstraintViolationException ex) {
             Logger.getLogger(BotResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private Mat bufferedImageToMat(BufferedImage bi) {
+        Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
+        byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+        mat.put(0, 0, data);
+        return mat;
+    }
+    private int getPeopleInPhoto(Update update) {
+
+        int absoluteFaceSize = 0;
+
+
+        byte[] photo = new MealLogFactory().getPicture(update);
+
+
+        BufferedImage image = null;
+        try {
+            CascadeClassifier faceCascade = new CascadeClassifier();
+            String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getAbsolutePath();
+            System.out.println(classifierPath);
+            faceCascade.load(classifierPath);
+            image = ImageIO.read(new ByteArrayInputStream(photo));
+
+
+            Mat frame = bufferedImageToMat(image);
+
+
+
+
+            MatOfRect faces = new MatOfRect();
+            Mat grayFrame = new Mat();
+
+            // convert the frame in gray scale
+            Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
+            // equalize the frame histogram to improve the result
+            Imgproc.equalizeHist(grayFrame, grayFrame);
+
+            // compute minimum face size (20% of the frame height, in our case)
+            if (absoluteFaceSize == 0)
+            {
+                int height = grayFrame.rows();
+                if (Math.round(height * 0.02f) > 0)
+                {
+                    absoluteFaceSize = Math.round(height * 0.02f);
+                }
+            }
+
+            // detect faces
+            faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
+                new Size(absoluteFaceSize, absoluteFaceSize), new Size());
+
+            return faces.toArray().length;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
         }
     }
 
