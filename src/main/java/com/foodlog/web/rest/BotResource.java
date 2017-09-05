@@ -11,6 +11,7 @@ import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
+import nu.pattern.OpenCV;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.opencv.core.CvType;
@@ -306,6 +307,8 @@ public class BotResource {
 
         BufferedImage image = null;
         try {
+            OpenCV.loadLibrary();
+
             CascadeClassifier faceCascade = new CascadeClassifier();
             String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getAbsolutePath();
             System.out.println(classifierPath);
