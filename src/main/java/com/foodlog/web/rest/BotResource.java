@@ -310,7 +310,7 @@ public class BotResource {
             OpenCV.loadLibrary();
 
             CascadeClassifier faceCascade = new CascadeClassifier();
-            String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getAbsolutePath();
+            String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
             System.out.println(classifierPath);
             faceCascade.load(classifierPath);
             image = ImageIO.read(new ByteArrayInputStream(photo));
