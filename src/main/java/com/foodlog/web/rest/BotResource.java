@@ -315,7 +315,12 @@ public class BotResource {
 
 
             System.out.println(classifierPath);
-            faceCascade.load(classifierPath);
+            boolean carregou = faceCascade.load(classifierPath);
+            System.out.println("########### carregou: " + carregou);
+
+
+
+
             image = ImageIO.read(new ByteArrayInputStream(photo));
 
 
