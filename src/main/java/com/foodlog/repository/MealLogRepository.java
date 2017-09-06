@@ -19,7 +19,7 @@ import java.util.List;
 public interface MealLogRepository extends JpaRepository<MealLog,Long> {
 
     @Query("select meal_log from MealLog meal_log where meal_log.user.login = ?#{principal.username}")
-    Page<MealLog> findByUserIsCurrentUser(Pageable pageable);
+    Page<MealLog> findByUserIsCurrentUserOrderByMealDateTimeDesc(Pageable pageable);
 
     List<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
 
