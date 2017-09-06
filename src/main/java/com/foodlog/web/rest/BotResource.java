@@ -103,7 +103,7 @@ public class BotResource {
             System.out.println("########### carregou: " + carregou);
 
 
-            BufferedImage image = ImageIO.read(new ClassPathResource("teste.jpg").getFile());
+            BufferedImage image = ImageIO.read(cl.getResourceAsStream("teste.jpg"));
 
 
             Mat frame = bufferedImageToMat(image);
@@ -376,23 +376,17 @@ public class BotResource {
             //System.out.println("folder: " + folder);
 
 
-            InputStream initialStream = new FileInputStream(source);
-            byte[] buffer = new byte[initialStream.available()];
-            initialStream.read(buffer);
+            ClassLoader cl = this.getClass().getClassLoader();
+            InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
+
+
+            System.out.println("stream null: " + (initialStream == null));
 
             File targetFile = new File("targetFile.tmp");
-            OutputStream outStream = new FileOutputStream(targetFile);
-            outStream.write(buffer);
-
-            outStream.close();
+            FileUtils.copyInputStreamToFile(initialStream, targetFile);
 
             boolean carregou = faceCascade.load(targetFile.getName());
-            System.out.println("######s##### carregou: " + carregou);
 
-
-
-
-            carregou = faceCascade.load(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
             System.out.println("######s##### carregou 2 :  " + carregou);
 
 
