@@ -80,7 +80,7 @@ public class BotResource {
             CascadeClassifier faceCascade = new CascadeClassifier();
             //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
 
-            File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
+            //File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
 
            // File source = new File(this.getClass().getClassLoader().getResource("config/haarcascade_frontalface_alt.xml").getPath());
 
@@ -89,8 +89,9 @@ public class BotResource {
 
             //System.out.println("folder: " + folder);
 
-
-            InputStream initialStream = new FileInputStream(source);
+            ClassLoader cl = this.getClass().getClassLoader();
+            InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
+            //InputStream initialStream = new FileInputStream(source);
             byte[] buffer = new byte[initialStream.available()];
             initialStream.read(buffer);
 
