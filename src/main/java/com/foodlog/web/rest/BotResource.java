@@ -363,18 +363,7 @@ public class BotResource {
             OpenCV.loadLibrary();
 
             CascadeClassifier faceCascade = new CascadeClassifier();
-            //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
-            //String classifierPath = this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath();
-
-
-            //File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
-            File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
-
-
-            //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
-
-            //System.out.println("folder: " + folder);
-
+           
 
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
