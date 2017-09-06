@@ -26,10 +26,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpRequest;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +80,78 @@ public class BotResource {
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
-     @RequestMapping(method= RequestMethod.POST, value="/update")
+    @RequestMapping("/greeting")
+    public String greeting(@RequestParam(value="name", defaultValue="World") String name) throws IOException {
+
+        int absoluteFaceSize = 0;
+
+        OpenCV.loadLibrary();
+        Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
+        System.out.println("mat = " + mat.dump());
+
+        CascadeClassifier faceCascade = new CascadeClassifier();
+        //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
+
+
+
+        File source = new File(this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath());
+
+
+        //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
+
+        //System.out.println("folder: " + folder);
+
+
+        InputStream initialStream = new FileInputStream(source);
+        byte[] buffer = new byte[initialStream.available()];
+        initialStream.read(buffer);
+
+        File targetFile = new File("targetFile.tmp");
+        OutputStream outStream = new FileOutputStream(targetFile);
+        outStream.write(buffer);
+
+        outStream.close();
+
+        boolean carregou = faceCascade.load(targetFile.getName());
+        System.out.println("########### carregou: " + carregou);
+
+
+        BufferedImage image = ImageIO.read(new ClassPathResource("teste.jpg").getFile());
+
+
+        Mat frame = bufferedImageToMat(image);
+
+
+
+
+        MatOfRect faces = new MatOfRect();
+        Mat grayFrame = new Mat();
+
+        // convert the frame in gray scale
+        Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
+        // equalize the frame histogram to improve the result
+        Imgproc.equalizeHist(grayFrame, grayFrame);
+
+        // compute minimum face size (20% of the frame height, in our case)
+        if (absoluteFaceSize == 0)
+        {
+            int height = grayFrame.rows();
+            if (Math.round(height * 0.02f) > 0)
+            {
+                absoluteFaceSize = Math.round(height * 0.02f);
+            }
+        }
+
+        // detect faces
+        faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
+            new Size(absoluteFaceSize, absoluteFaceSize), new Size());
+
+
+        return "size:" + faces.toArray().length;
+    }
+
+
+    @RequestMapping(method= RequestMethod.POST, value="/update")
     public void ReceberUpdate(@RequestBody Update update){
 
         receivedMessages = (Map<Long, Long>) request.getSession().getAttribute("receivedMessages");
