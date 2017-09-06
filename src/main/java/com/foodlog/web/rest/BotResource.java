@@ -308,10 +308,10 @@ public class BotResource {
 
             CascadeClassifier faceCascade = new CascadeClassifier();
             //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
-            String classifierPath = this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath();
+            //String classifierPath = this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath();
 
 
-            File source = new File(this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath());
+            File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
 
 
             //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
