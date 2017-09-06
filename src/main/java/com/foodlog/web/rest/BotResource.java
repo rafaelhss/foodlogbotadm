@@ -11,6 +11,7 @@ import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
 import nu.pattern.OpenCV;
+import org.apache.commons.io.FileUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -91,15 +92,12 @@ public class BotResource {
 
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
-            //InputStream initialStream = new FileInputStream(source);
-            byte[] buffer = new byte[initialStream.available()];
-            initialStream.read(buffer);
+
+
+            System.out.println("stream null: " + (initialStream == null);
 
             File targetFile = new File("targetFile.tmp");
-            OutputStream outStream = new FileOutputStream(targetFile);
-            outStream.write(buffer);
-
-            outStream.close();
+            FileUtils.copyInputStreamToFile(initialStream, targetFile);
 
             boolean carregou = faceCascade.load(targetFile.getName());
             System.out.println("########### carregou: " + carregou);
