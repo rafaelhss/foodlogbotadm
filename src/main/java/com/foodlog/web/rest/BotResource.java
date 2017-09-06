@@ -94,7 +94,7 @@ public class BotResource {
             InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
 
 
-            System.out.println("stream null: " + (initialStream == null);
+            System.out.println("stream null: " + (initialStream == null));
 
             File targetFile = new File("targetFile.tmp");
             FileUtils.copyInputStreamToFile(initialStream, targetFile);
