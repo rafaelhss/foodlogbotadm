@@ -35,10 +35,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
@@ -314,8 +311,25 @@ public class BotResource {
             String classifierPath = this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath();
 
 
-            System.out.println(classifierPath);
-            boolean carregou = faceCascade.load(classifierPath);
+            File source = new File(this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath());
+
+
+            //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
+
+            //System.out.println("folder: " + folder);
+
+
+            InputStream initialStream = new FileInputStream(source);
+            byte[] buffer = new byte[initialStream.available()];
+            initialStream.read(buffer);
+
+            File targetFile = new File("targetFile.tmp");
+            OutputStream outStream = new FileOutputStream(targetFile);
+            outStream.write(buffer);
+
+            outStream.close();
+
+            boolean carregou = faceCascade.load(targetFile.getName());
             System.out.println("########### carregou: " + carregou);
 
 
