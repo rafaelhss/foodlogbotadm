@@ -312,25 +312,8 @@ public class BotResource {
 
 
             //File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
-            File source = new File(ClassLoader.getSystemResource("haarcascade_frontalface_alt.xml").getPath());
-
-
-            //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
-
-            //System.out.println("folder: " + folder);
-
-
-            InputStream initialStream = new FileInputStream(source);
-            byte[] buffer = new byte[initialStream.available()];
-            initialStream.read(buffer);
-
-            File targetFile = new File("targetFile.tmp");
-            OutputStream outStream = new FileOutputStream(targetFile);
-            outStream.write(buffer);
-
-            outStream.close();
-
-            boolean carregou = faceCascade.load(targetFile.getName());
+            
+            boolean carregou = faceCascade.load(ClassLoader.getSystemResource("haarcascade_frontalface_alt.xml").getPath());
             System.out.println("######s##### carregou: " + carregou);
 
 
