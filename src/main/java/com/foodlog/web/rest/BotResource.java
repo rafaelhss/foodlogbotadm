@@ -311,7 +311,8 @@ public class BotResource {
             //String classifierPath = this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath();
 
 
-            File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
+            //File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
+            File source = new File(ClassLoader.getSystemResource("haarcascade_frontalface_alt.xml").getPath());
 
 
             //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
@@ -330,7 +331,7 @@ public class BotResource {
             outStream.close();
 
             boolean carregou = faceCascade.load(targetFile.getName());
-            System.out.println("########### carregou: " + carregou);
+            System.out.println("######s##### carregou: " + carregou);
 
 
 
