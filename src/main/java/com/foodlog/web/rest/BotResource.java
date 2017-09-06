@@ -7,12 +7,10 @@ import com.foodlog.repository.MealLogRepository;
 import com.foodlog.repository.ScheduledMealRepository;
 import com.foodlog.repository.UserTelegramRepository;
 import com.foodlog.repository.WeightRepository;
-import com.foodlog.service.MealLogService;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.sender.Sender;
 import nu.pattern.OpenCV;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -23,9 +21,6 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
@@ -35,16 +30,8 @@ import java.awt.image.DataBufferByte;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,71 +70,73 @@ public class BotResource {
     @RequestMapping("/greeting")
     public String greeting(@RequestParam(value="name", defaultValue="World") String name) throws IOException {
 
-        int absoluteFaceSize = 0;
+        try {
+            int absoluteFaceSize = 0;
 
-        OpenCV.loadLibrary();
-        Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
-        System.out.println("mat = " + mat.dump());
+            OpenCV.loadLibrary();
+            Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
+            System.out.println("mat = " + mat.dump());
 
-        CascadeClassifier faceCascade = new CascadeClassifier();
-        //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
+            CascadeClassifier faceCascade = new CascadeClassifier();
+            //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
 
+            File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
 
-
-        File source = new File(this.getClass().getClassLoader().getResource("haarcascade_frontalface_alt.xml").getPath());
-
-
-        //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
-
-        //System.out.println("folder: " + folder);
+           // File source = new File(this.getClass().getClassLoader().getResource("config/haarcascade_frontalface_alt.xml").getPath());
 
 
-        InputStream initialStream = new FileInputStream(source);
-        byte[] buffer = new byte[initialStream.available()];
-        initialStream.read(buffer);
+            //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
 
-        File targetFile = new File("targetFile.tmp");
-        OutputStream outStream = new FileOutputStream(targetFile);
-        outStream.write(buffer);
-
-        outStream.close();
-
-        boolean carregou = faceCascade.load(targetFile.getName());
-        System.out.println("########### carregou: " + carregou);
+            //System.out.println("folder: " + folder);
 
 
-        BufferedImage image = ImageIO.read(new ClassPathResource("teste.jpg").getFile());
+            InputStream initialStream = new FileInputStream(source);
+            byte[] buffer = new byte[initialStream.available()];
+            initialStream.read(buffer);
+
+            File targetFile = new File("targetFile.tmp");
+            OutputStream outStream = new FileOutputStream(targetFile);
+            outStream.write(buffer);
+
+            outStream.close();
+
+            boolean carregou = faceCascade.load(targetFile.getName());
+            System.out.println("########### carregou: " + carregou);
 
 
-        Mat frame = bufferedImageToMat(image);
+            BufferedImage image = ImageIO.read(new ClassPathResource("teste.jpg").getFile());
 
 
+            Mat frame = bufferedImageToMat(image);
 
 
-        MatOfRect faces = new MatOfRect();
-        Mat grayFrame = new Mat();
+            MatOfRect faces = new MatOfRect();
+            Mat grayFrame = new Mat();
 
-        // convert the frame in gray scale
-        Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
-        // equalize the frame histogram to improve the result
-        Imgproc.equalizeHist(grayFrame, grayFrame);
+            // convert the frame in gray scale
+            Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
+            // equalize the frame histogram to improve the result
+            Imgproc.equalizeHist(grayFrame, grayFrame);
 
-        // compute minimum face size (20% of the frame height, in our case)
-        if (absoluteFaceSize == 0)
-        {
-            int height = grayFrame.rows();
-            if (Math.round(height * 0.02f) > 0)
-            {
-                absoluteFaceSize = Math.round(height * 0.02f);
+            // compute minimum face size (20% of the frame height, in our case)
+            if (absoluteFaceSize == 0) {
+                int height = grayFrame.rows();
+                if (Math.round(height * 0.02f) > 0) {
+                    absoluteFaceSize = Math.round(height * 0.02f);
+                }
             }
+
+            // detect faces
+            faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
+                new Size(absoluteFaceSize, absoluteFaceSize), new Size());
+
+
+            return "size:" + faces.toArray().length;
+        } catch (Throwable e){
+            System.out.println("bad");
+            e.printStackTrace();
+            return e.getMessage();
         }
-
-        // detect faces
-        faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
-            new Size(absoluteFaceSize, absoluteFaceSize), new Size());
-
-
-        return "size:" + faces.toArray().length;
     }
 
 
@@ -380,7 +369,7 @@ public class BotResource {
 
 
             //File source = new File(this.getClass().getClassLoader().getResource("com/foodlog/web/rest/haarcascade_frontalface_alt.xml").getPath());
-            File source = new File(ClassLoader.getSystemResource("haarcascade_frontalface_alt.xml").getPath());
+            File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
 
 
             //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
@@ -404,7 +393,7 @@ public class BotResource {
 
 
 
-            carregou = faceCascade.load(ClassLoader.getSystemResource("haarcascade_frontalface_alt.xml").getPath());
+            carregou = faceCascade.load(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
             System.out.println("######s##### carregou 2 :  " + carregou);
 
 
