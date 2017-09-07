@@ -9,6 +9,7 @@ import com.foodlog.repository.UserTelegramRepository;
 import com.foodlog.repository.WeightRepository;
 import com.foodlog.web.rest.bot.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
+import com.foodlog.web.rest.bot.openCV.PeopleDetector;
 import com.foodlog.web.rest.bot.sender.Sender;
 import nu.pattern.OpenCV;
 import org.apache.commons.io.FileUtils;
@@ -67,76 +68,6 @@ public class BotResource {
     private UserTelegramRepository userTelegramRepository;
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
-
-    @RequestMapping("/greeting")
-    public String greeting(@RequestParam(value="name", defaultValue="World") String name) throws IOException {
-
-        try {
-            int absoluteFaceSize = 0;
-
-            OpenCV.loadLibrary();
-            Mat mat = Mat.eye(3, 3, CvType.CV_8UC1);
-            System.out.println("mat = " + mat.dump());
-
-            CascadeClassifier faceCascade = new CascadeClassifier();
-            //String classifierPath = new ClassPathResource("haarcascade_frontalface_alt.xml").getFile().getCanonicalPath();
-
-            //File source = new File(ClassLoader.getSystemResource("config/haarcascade_frontalface_alt.xml").getPath());
-
-           // File source = new File(this.getClass().getClassLoader().getResource("config/haarcascade_frontalface_alt.xml").getPath());
-
-
-            //String folder = source.getParent().substring(source.getParent().lastIndexOf("\\")+1);
-
-            //System.out.println("folder: " + folder);
-
-            ClassLoader cl = this.getClass().getClassLoader();
-            InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
-
-
-            System.out.println("stream null: " + (initialStream == null));
-
-            File targetFile = new File("targetFile.tmp");
-            FileUtils.copyInputStreamToFile(initialStream, targetFile);
-
-            boolean carregou = faceCascade.load(targetFile.getName());
-            System.out.println("########### carregou: " + carregou);
-
-
-            BufferedImage image = ImageIO.read(cl.getResourceAsStream("teste.jpg"));
-
-
-            Mat frame = bufferedImageToMat(image);
-
-
-            MatOfRect faces = new MatOfRect();
-            Mat grayFrame = new Mat();
-
-            // convert the frame in gray scale
-            Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
-            // equalize the frame histogram to improve the result
-            Imgproc.equalizeHist(grayFrame, grayFrame);
-
-            // compute minimum face size (20% of the frame height, in our case)
-            if (absoluteFaceSize == 0) {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.02f) > 0) {
-                    absoluteFaceSize = Math.round(height * 0.02f);
-                }
-            }
-
-            // detect faces
-            faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
-                new Size(absoluteFaceSize, absoluteFaceSize), new Size());
-
-
-            return "size:" + faces.toArray().length;
-        } catch (Throwable e){
-            System.out.println("bad");
-            e.printStackTrace();
-            return e.getMessage();
-        }
-    }
 
 
     @RequestMapping(method= RequestMethod.POST, value="/update")
@@ -321,14 +252,16 @@ public class BotResource {
             //testa se recebeu foto
             if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
-                if(getPeopleInPhoto(update) > 0){
-                    message = "achei " + getPeopleInPhoto(update) + " pessoas na foto. Nada fiz ainda";
+                byte[] photo = new MealLogFactory().getPicture(update);
+                int people = new PeopleDetector().getPeopleInPhoto(photo);
+                if(people > 0){
+                    message = "achei " + people + " pessoas na foto. Nada fiz ainda";
                 } else {
 
                     MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
                     message = saveMealLogAndGenerateMessage(update, mealLog);
 
-                    message += "   (getPeopleInPhoto(update):" + getPeopleInPhoto(update);
+                    message += "   (getPeopleInPhoto(update):" + people;
                 }
 
             } else {
@@ -344,79 +277,6 @@ public class BotResource {
         }
     }
 
-    private Mat bufferedImageToMat(BufferedImage bi) {
-        Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
-        byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
-        mat.put(0, 0, data);
-        return mat;
-    }
-    private int getPeopleInPhoto(Update update) {
-
-        int absoluteFaceSize = 0;
-
-
-        byte[] photo = new MealLogFactory().getPicture(update);
-
-
-        BufferedImage image = null;
-        try {
-            OpenCV.loadLibrary();
-
-            CascadeClassifier faceCascade = new CascadeClassifier();
-           
-
-            ClassLoader cl = this.getClass().getClassLoader();
-            InputStream initialStream = cl.getResourceAsStream("config/haarcascade_frontalface_alt.xml");
-
-
-            System.out.println("stream null: " + (initialStream == null));
-
-            File targetFile = new File("targetFile.tmp");
-            FileUtils.copyInputStreamToFile(initialStream, targetFile);
-
-            boolean carregou = faceCascade.load(targetFile.getName());
-
-            System.out.println("######s##### carregou 2 :  " + carregou);
-
-
-
-            image = ImageIO.read(new ByteArrayInputStream(photo));
-
-
-            Mat frame = bufferedImageToMat(image);
-
-
-
-
-            MatOfRect faces = new MatOfRect();
-            Mat grayFrame = new Mat();
-
-            // convert the frame in gray scale
-            Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
-            // equalize the frame histogram to improve the result
-            Imgproc.equalizeHist(grayFrame, grayFrame);
-
-            // compute minimum face size (20% of the frame height, in our case)
-            if (absoluteFaceSize == 0)
-            {
-                int height = grayFrame.rows();
-                if (Math.round(height * 0.02f) > 0)
-                {
-                    absoluteFaceSize = Math.round(height * 0.02f);
-                }
-            }
-
-            // detect faces
-            faceCascade.detectMultiScale(grayFrame, faces, 1.1, 2, 0 | Objdetect.CASCADE_SCALE_IMAGE,
-                new Size(absoluteFaceSize, absoluteFaceSize), new Size());
-
-            return faces.toArray().length;
-        } catch (Throwable e) {
-            System.out.println("ERro crazy: ");
-            e.printStackTrace();
-            return -1;
-        }
-    }
 
     private String saveMealLogAndGenerateMessage(@RequestBody Update update, MealLog mealLog) {
         String message;
