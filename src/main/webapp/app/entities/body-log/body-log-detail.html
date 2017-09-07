@@ -1,0 +1,40 @@
+
+<div>
+    <h2><span>Body Log</span> {{vm.bodyLog.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span>Photo</span></dt>
+        <dd>
+            <div ng-if="vm.bodyLog.photo">
+                <a ng-click="vm.openFile(vm.bodyLog.photoContentType, vm.bodyLog.photo)">
+                    <img data-ng-src="{{'data:' + vm.bodyLog.photoContentType + ';base64,' + vm.bodyLog.photo}}" style="max-width: 100%;" alt="bodyLog image"/>
+                </a>
+                {{vm.bodyLog.photoContentType}}, {{vm.byteSize(vm.bodyLog.photo)}}
+            </div>
+        </dd>
+        <dt><span>Body Log Datetime</span></dt>
+        <dd>
+            <span>{{vm.bodyLog.bodyLogDatetime | date:'medium'}}</span>
+        </dd>
+        <dt><span>Update Id</span></dt>
+        <dd>
+            <span>{{vm.bodyLog.updateId}}</span>
+        </dd>
+        <dt><span>User</span></dt>
+        <dd>
+            {{vm.bodyLog.user.login}}
+        </dd>
+    </dl>
+
+    <button type="submit"
+            ui-sref="{{ vm.previousState }}"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button" ui-sref="body-log-detail.edit({id:vm.bodyLog.id})" class="btn btn-primary">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span class="hidden-sm-down"> Edit</span>
+    </button>
+</div>

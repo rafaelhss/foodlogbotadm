@@ -10,10 +10,12 @@
     <include file="classpath:config/liquibase/changelog/20170707005110_added_entity_Weight.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170707153520_added_entity_MealLogDay.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170826033609_added_entity_UserTelegram.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170907133646_added_entity_BodyLog.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="classpath:config/liquibase/changelog/20170608104657_added_entity_constraints_ScheduledMeal.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170611010600_added_entity_constraints_MealLog.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170826033609_added_entity_constraints_UserTelegram.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170707005110_added_entity_constraints_Weight.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170907133646_added_entity_constraints_BodyLog.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

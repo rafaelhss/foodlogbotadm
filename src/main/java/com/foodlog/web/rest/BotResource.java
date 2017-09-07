@@ -1,34 +1,20 @@
+
 package com.foodlog.web.rest;
 
 import com.foodlog.domain.*;
 import com.foodlog.emoji.string.*;
 import com.foodlog.emoji.string.Objects;
-import com.foodlog.repository.MealLogRepository;
-import com.foodlog.repository.ScheduledMealRepository;
-import com.foodlog.repository.UserTelegramRepository;
-import com.foodlog.repository.WeightRepository;
-import com.foodlog.web.rest.bot.MealLogFactory;
+import com.foodlog.repository.*;
+import com.foodlog.web.rest.bot.factory.MealLogFactory;
 import com.foodlog.web.rest.bot.model.Update;
 import com.foodlog.web.rest.bot.openCV.PeopleDetector;
 import com.foodlog.web.rest.bot.sender.Sender;
-import nu.pattern.OpenCV;
-import org.apache.commons.io.FileUtils;
 import org.hibernate.exception.ConstraintViolationException;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.objdetect.Objdetect;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -66,6 +52,10 @@ public class BotResource {
 
     @Autowired
     private UserTelegramRepository userTelegramRepository;
+
+    @Autowired
+    private BodyLogRepository bodyLogRepository;
+
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
@@ -255,7 +245,20 @@ public class BotResource {
                 byte[] photo = new MealLogFactory().getPicture(update);
                 int people = new PeopleDetector().getPeopleInPhoto(photo);
                 if(people > 0){
-                    message = "achei " + people + " pessoas na foto. Nada fiz ainda";
+                    BodyLog bodyLog = new BodyLog();
+                    byte[] imageBytes = new MealLogFactory().getPicture(update);
+                    bodyLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imageBytes)));
+                    bodyLog.setPhotoContentType("image/jpg");
+                    bodyLog.setBodyLogDatetime(Instant.now());
+                    bodyLog.setUser(getCurrentUser(update));
+                    bodyLog.setUpdateId(update.getUpdate_id());
+
+                    bodyLogRepository.save(bodyLog);
+
+                    message = "Body Log salvo com sucesso";
+
+
+
                 } else {
 
                     MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));

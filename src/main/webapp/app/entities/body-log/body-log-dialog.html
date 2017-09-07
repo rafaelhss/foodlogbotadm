@@ -1,0 +1,101 @@
+
+<form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="vm.clear()">&times;</button>
+        <h4 class="modal-title" id="myBodyLogLabel">Create or edit a Body Log</h4>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" ng-show="vm.bodyLog.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                    ng-model="vm.bodyLog.id" readonly />
+        </div>
+        <div class="form-group" ngf-drop ngf-change="vm.setPhoto($file, vm.bodyLog)" ngf-pattern="'image/*'">
+            <label class="control-label" for="field_photo">Photo</label>
+            <div>
+                <img data-ng-src="{{'data:' + vm.bodyLog.photoContentType + ';base64,' + vm.bodyLog.photo}}" style="max-height: 100px;" ng-if="vm.bodyLog.photo" alt="bodyLog image"/>
+                <div ng-if="vm.bodyLog.photo" class="help-block clearfix">
+                    <span class="pull-left">{{vm.bodyLog.photoContentType}}, {{vm.byteSize(vm.bodyLog.photo)}}</span>
+                    <button type="button" ng-click="vm.bodyLog.photo=null;vm.bodyLog.photoContentType=null;"
+                            class="btn btn-default btn-xs pull-right">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </div>
+                <button type="button" ngf-select class="btn btn-default btn-block"
+                        ngf-change="vm.setPhoto($file, vm.bodyLog)" accept="image/*">
+                    Add image
+                </button>
+            </div>
+            <input type="hidden" class="form-control" name="photo" id="field_photo"
+                    ng-model="vm.bodyLog.photo"
+                    required/>
+            <input type="hidden" class="form-control" name="photoContentType" id="field_photoContentType"
+                    ng-model="vm.bodyLog.photoContentType" />
+            <div ng-show="editForm.photo.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.photo.$error.required">
+                    This field is required.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_bodyLogDatetime">Body Log Datetime</label>
+                <div class="input-group">
+                    <input id="field_bodyLogDatetime" type="text" class="form-control" name="bodyLogDatetime" datetime-picker="{{dateformat}}" ng-model="vm.bodyLog.bodyLogDatetime" is-open="vm.datePickerOpenStatus.bodyLogDatetime"
+                    required/>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="vm.openCalendar('bodyLogDatetime')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            <div ng-show="editForm.bodyLogDatetime.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.bodyLogDatetime.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.bodyLogDatetime.$error.ZonedDateTimelocal">
+                    This field should be a date and time.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="field_updateId">Update Id</label>
+            <input type="number" class="form-control" name="updateId" id="field_updateId"
+                    ng-model="vm.bodyLog.updateId"
+                    required/>
+            <div ng-show="editForm.updateId.$invalid">
+                <p class="help-block"
+                    ng-show="editForm.updateId.$error.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                    ng-show="editForm.updateId.$error.number">
+                    This field should be a number.
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="field_user">User</label>
+            <select class="form-control" id="field_user" name="user" ng-model="vm.bodyLog.user" ng-options="user as user.login for user in vm.users track by user.id" required>
+            </select>
+        </div>
+        <div ng-show="editForm.user.$invalid">
+            <p class="help-block"
+                ng-show="editForm.user.$error.required">
+                This field is required.
+            </p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
+            <span class="glyphicon glyphicon-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

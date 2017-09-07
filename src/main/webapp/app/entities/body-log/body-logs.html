@@ -1,0 +1,73 @@
+<div>
+    <h2>Body Logs</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="body-log.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span >
+                        Create new Body Log
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
+                    <th jh-sort-by="id"><span>ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="photo"><span>Photo</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="bodyLogDatetime"><span>Body Log Datetime</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="updateId"><span>Update Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="user.login"><span>User</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="bodyLog in vm.bodyLogs track by bodyLog.id">
+                    <td><a ui-sref="body-log-detail({id:bodyLog.id})">{{bodyLog.id}}</a></td>
+                    <td>
+                        <a ng-if="bodyLog.photo" ng-click="vm.openFile(bodyLog.photoContentType, bodyLog.photo)">
+                            <img data-ng-src="{{'data:' + bodyLog.photoContentType + ';base64,' + bodyLog.photo}}" style="max-height: 30px;" alt="bodyLog image"/>
+                        </a>
+                        <span ng-if="bodyLog.photo">{{bodyLog.photoContentType}}, {{vm.byteSize(bodyLog.photo)}}</span>
+                    </td>
+                    <td>{{bodyLog.bodyLogDatetime | date:'medium'}}</td>
+                    <td>{{bodyLog.updateId}}</td>
+                    <td>
+                        {{bodyLog.user.login}}
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="body-log-detail({id:bodyLog.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="body-log.edit({id:bodyLog.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="body-log.delete({id:bodyLog.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-sm-down"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount" items-per-page="vm.itemsPerPage"></jhi-item-count>
+    </div>
+    <uib-pager total-items="vm.totalItems" ng-model="vm.page" ng-change="vm.transition()"></uib-pager>
+</div>

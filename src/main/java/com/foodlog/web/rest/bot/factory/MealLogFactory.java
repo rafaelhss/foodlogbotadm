@@ -1,4 +1,4 @@
-package com.foodlog.web.rest.bot;
+package com.foodlog.web.rest.bot.factory;
 
 
 import com.foodlog.domain.MealLog;
@@ -9,6 +9,8 @@ import com.foodlog.repository.UserRepository;
 import com.foodlog.repository.UserTelegramRepository;
 import com.foodlog.security.DomainUserDetailsService;
 import com.foodlog.security.SecurityUtils;
+import com.foodlog.web.rest.bot.ApiUrlBuilder;
+import com.foodlog.web.rest.bot.Util;
 import com.foodlog.web.rest.bot.model.GetFile;
 import com.foodlog.web.rest.bot.model.Update;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,5 @@
 package com.foodlog.web.rest.bot.openCV;
 
-import com.foodlog.web.rest.bot.MealLogFactory;
-import com.foodlog.web.rest.bot.model.Update;
 import nu.pattern.OpenCV;
 import org.apache.commons.io.FileUtils;
 import org.opencv.core.CvType;
