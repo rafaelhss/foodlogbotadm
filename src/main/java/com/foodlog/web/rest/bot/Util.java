@@ -7,10 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import static org.aspectj.bridge.ISourceLocation.MAX_LINE;
+
 /**
  * Created by rafa on 26/08/17.
  */
 public class Util {
+    private static final int MAX_LINE_LENGHT = 50;
 //    public static void main(String[] args) throws Exception {
 //        //BufferedImage image = new Util().convertTextToGraphic("Arroz, feijão e carne", new Font("Arial", Font.PLAIN, 32));
 //        //write BufferedImage to file
@@ -19,13 +22,30 @@ public class Util {
 
     public byte[] convertTextToGraphic(String text, Font font) {
 
+        int max = MAX_LINE_LENGHT;
+        if(text.length() < MAX_LINE_LENGHT)
+            max = text.length();
+        String finaltext = text.substring(0, max);
+        text = text.substring(max);
+        while(text != null && !text.trim().equals("")){
+            finaltext += "\n" + text;
+
+            if(text.length() < MAX_LINE_LENGHT)
+                max = text.length();
+            text = text.substring(max);
+        }
+
+
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = img.createGraphics();
+        Graphics2D g2d = img.createGraphics();  
 
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics();
-        int width = fm.stringWidth(text);
-        int height = fm.getHeight();
+        int width = fm.stringWidth(finaltext);
+        if(finaltext.length() > MAX_LINE_LENGHT){
+            width = fm.stringWidth(finaltext.split("\n")[0]);
+        }
+        int height = fm.getHeight()*5;
         g2d.dispose();
 
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -42,7 +62,12 @@ public class Util {
         g2d.setFont(font);
         fm = g2d.getFontMetrics();
         g2d.setColor(Color.BLACK);
-        g2d.drawString(text, 0, fm.getAscent());
+        //g2d.drawString(text, 0, fm.getAscent());
+
+        int y = 0;
+        for (String line : finaltext.split("\n"))
+            g2d.drawString(line, 0, y += g2d.getFontMetrics().getHeight());
+
         g2d.dispose();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
