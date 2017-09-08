@@ -259,6 +259,7 @@ public class BotResource {
 
 
 
+
                 } else {
 
                     MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));

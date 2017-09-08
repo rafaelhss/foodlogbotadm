@@ -37,7 +37,7 @@ public class Util {
 
 
         BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = img.createGraphics();  
+        Graphics2D g2d = img.createGraphics();
 
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics();
