@@ -255,7 +255,7 @@ public class BotResource {
 
                     bodyLogRepository.save(bodyLog);
 
-                    message = "Body Log salvo com sucesso";
+                    message = "Body Log salvo com sucesso. Vou mandar";
 
                     //chama o image report para mandar o panel
                     HttpURLConnection conn = (HttpURLConnection) new URL("https://foodlogbotimagebatch.herokuapp.com/bodypanel?userid=" + getCurrentUser(update).getId()).openConnection();
