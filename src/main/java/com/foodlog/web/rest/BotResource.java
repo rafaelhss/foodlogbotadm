@@ -243,11 +243,11 @@ public class BotResource {
             if (update.getMessage().getPhoto() != null && update.getMessage().getPhoto().size() > 0) {
 
                 byte[] photo = new MealLogFactory().getPicture(update);
-                int people = new PeopleDetector().getPeopleInPhoto(photo);
-                if(people > 0){
+                byte[] imagePeopleBytes = new PeopleDetector().getPeopleInPhoto(photo);
+                if(imagePeopleBytes != null){
                     BodyLog bodyLog = new BodyLog();
-                    byte[] imageBytes = new MealLogFactory().getPicture(update);
-                    bodyLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imageBytes)));
+                    //byte[] imageBytes = new MealLogFactory().getPicture(update);
+                    bodyLog.setPhoto(DatatypeConverter.parseBase64Binary(DatatypeConverter.printBase64Binary(imagePeopleBytes)));
                     bodyLog.setPhotoContentType("image/jpg");
                     bodyLog.setBodyLogDatetime(Instant.now());
                     bodyLog.setUser(getCurrentUser(update));
@@ -268,7 +268,7 @@ public class BotResource {
                     MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
                     message = saveMealLogAndGenerateMessage(update, mealLog);
 
-                    message += "   (getPeopleInPhoto(update):" + people;
+                    message += "   (getPeopleInPhoto(update):" + (imagePeopleBytes != null);
                 }
 
             } else {

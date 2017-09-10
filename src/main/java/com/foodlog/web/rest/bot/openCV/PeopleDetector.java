@@ -2,10 +2,8 @@ package com.foodlog.web.rest.bot.openCV;
 
 import nu.pattern.OpenCV;
 import org.apache.commons.io.FileUtils;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Size;
+import org.opencv.core.*;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.objdetect.Objdetect;
@@ -29,7 +27,7 @@ public class PeopleDetector {
         return mat;
     }
 
-    public int getPeopleInPhoto(byte[] photo) {
+    public byte[] getPeopleInPhoto(byte[] photo) {
 
         int absoluteFaceSize = 0;
 
@@ -61,26 +59,63 @@ public class PeopleDetector {
             //Face frontal
             CascadeClassifier faceCascadeFace = getCascadeClassifier("config/haarcascade_frontalface_alt.xml");
             count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeFace);
-
+            salvar(frame, faces, "1");
+            if(count > 0){
+                MatOfByte mob = new MatOfByte();
+                Highgui.imencode(".jpg", frame ,mob);
+                return mob.toArray();
+            }
 
             //Corpo inteiro
             CascadeClassifier faceCascadeCorpo = getCascadeClassifier("config/haarcascade_fullbody.xml");
             count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeCorpo);
+            salvar(frame, faces, "2");
+            if(count > 0){
+                MatOfByte mob = new MatOfByte();
+                Highgui.imencode(".jpg", frame ,mob);
+                return mob.toArray();
+            }
 
             //upper body
             CascadeClassifier faceCascadeUpper = getCascadeClassifier("config/haarcascade_upperbody.xml");
             count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeUpper);
+            salvar(frame, faces, "3");
+            if(count > 0){
+                MatOfByte mob = new MatOfByte();
+                Highgui.imencode(".jpg", frame ,mob);
+                return mob.toArray();
+            }
 
             //perfil
             CascadeClassifier faceCascadeProfile = getCascadeClassifier("config/haarcascade_profileface.xml");
             count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeProfile);
+            salvar(frame, faces, "4");
+            if(count > 0){
+                MatOfByte mob = new MatOfByte();
+                Highgui.imencode(".jpg", frame ,mob);
+                return mob.toArray();
+            }
 
-            return count;
+            return null;
+
         } catch (Throwable e) {
             System.out.println("ERro crazy: ");
             e.printStackTrace();
-            return -1;
+            return null;
         }
+    }
+
+    private void salvar(Mat frame, MatOfRect faces, String n) {
+
+       try {
+           // each rectangle in faces is a face
+           Rect[] facesArray = faces.toArray();
+           for (int i = 0; i < facesArray.length; i++)
+               Core.rectangle(frame, facesArray[i].tl(), facesArray[i].br(), new Scalar(0, 255, 0, 255), 3);
+           save(frame, "/home/rafa/Documents/Projects/foodlogbotadm/foodlogbotadm/target/teste" + n + ".jpg");
+       } catch (Exception e){
+           e.printStackTrace();
+       }
     }
 
     private int countPattern(int absoluteFaceSize, MatOfRect faces, Mat grayFrame, CascadeClassifier faceCascadeFace) {
@@ -108,5 +143,23 @@ public class PeopleDetector {
         System.out.println("######s##### carregou 2 :  " + carregou);
         return faceCascade;
     }
+    private void save(Mat mat, String name)
+    {
+        MatOfByte mob = new MatOfByte();
+        //convert the matrix into a matrix of bytes appropriate for
+        //this file extension
+        Highgui.imencode(".jpg", mat ,mob);
+        //convert the "matrix of bytes" into a byte array
+        byte[] byteArray = mob.toArray();
+        BufferedImage bufImage = null;
+        try {
+            InputStream in = new ByteArrayInputStream(byteArray);
+            bufImage = ImageIO.read(in);
+            File outputfile = new File(name);
+            ImageIO.write(bufImage, "jpg", outputfile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
 }
