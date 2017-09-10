@@ -32,7 +32,7 @@ public class Weight implements Serializable {
     @Column(name = "jhi_comment")
     private String comment;
 
-    @Column(name = "update_id")
+    @Column(name = "update_id", unique = true)
     private Long updateId;
 
     @ManyToOne
