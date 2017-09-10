@@ -24,4 +24,6 @@ public interface MealLogRepository extends JpaRepository<MealLog,Long> {
     List<MealLog> findByOrderByMealDateTimeDesc(Pageable pageable);
 
     List<MealLog> findByUserAndMealDateTimeAfterOrderByMealDateTimeDesc(User user, Instant minus);
+
+    MealLog findTop1ByUserOrderByMealDateTimeDesc(User currentUser);
 }

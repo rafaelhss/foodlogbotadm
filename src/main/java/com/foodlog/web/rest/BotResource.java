@@ -11,6 +11,7 @@ import com.foodlog.web.rest.bot.openCV.PeopleDetector;
 import com.foodlog.web.rest.bot.sender.Sender;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,9 +36,6 @@ public class BotResource {
     @Autowired
     private HttpServletRequest request;
 
-    private Map<Long, Long> receivedMessages;// = new ArrayList<Long>();
-
-
     @Autowired
     ScheduledMealRepository scheduledMealRepository;
 
@@ -61,14 +59,7 @@ public class BotResource {
 
 
     @RequestMapping(method= RequestMethod.POST, value="/update")
-    public void ReceberUpdate(@RequestBody Update update){
-
-        receivedMessages = (Map<Long, Long>) request.getSession().getAttribute("receivedMessages");
-        if(receivedMessages == null){
-            receivedMessages = new HashMap<>();
-        }
-
-        if(receivedMessages.get(update.getUpdate_id()) == null) {
+    public void ReceberUpdate(@RequestBody Update update) throws IOException {
 
             int user_id = update.getMessage().getFrom().getId();
 
@@ -83,16 +74,58 @@ public class BotResource {
                 processTimeline(update, user_id);
             } else if(checkForTextLog(update)){
                 processTextLog(update, user_id);
+            } else if (checkForUndo(update)){
+                processUndo(update, user_id);
             } else {
                 processPhoto(update, user_id);
             }
 
-            receivedMessages.put(update.getUpdate_id(),update.getUpdate_id());
-            request.getSession().setAttribute("receivedMessages", receivedMessages);
 
-        } else {
-            System.out.println("mensagem Repetida: " + update.getUpdate_id() + " " + update.getMessage().getDate());
+    }
+
+    private void processUndo(Update update, int user_id) throws IOException {
+
+        JpaRepository repo = null;
+        Long idToDelete = 0L;
+        Instant refDate = null;
+
+        String message = "";
+
+        MealLog mealLog = mealLogRepository
+            .findTop1ByUserOrderByMealDateTimeDesc(getCurrentUser(update));
+        repo = mealLogRepository;
+        idToDelete = mealLog.getId();
+        refDate = mealLog.getMealDateTime();
+        message = "Melalog ";
+
+        Weight weight = weightRepository
+            .findTop1ByUserOrderByWeightDateTimeDesc(getCurrentUser(update));
+        if(weight.getWeightDateTime().isAfter(refDate)){
+            repo = weightRepository;
+            idToDelete = weight.getId();
+            refDate = weight.getWeightDateTime();
+            message = "Peso ";
         }
+
+        BodyLog bodyLog = bodyLogRepository
+            .findTop1ByUserOrderByBodyLogDatetimeDesc(getCurrentUser(update));
+        if(bodyLog.getBodyLogDatetime().isAfter(refDate)){
+            repo = bodyLogRepository;
+            idToDelete = bodyLog.getId();
+            refDate = bodyLog.getBodyLogDatetime();
+            message = "Bodylog ";
+        }
+
+        repo.delete(idToDelete);
+
+        new Sender(BOT_ID).sendResponse(user_id, message + "removido");
+
+
+    }
+
+    private boolean checkForUndo(Update update) {
+        return update.getMessage().getText() != null &&
+            update.getMessage().getText().trim().toLowerCase().equals("undo");
     }
 
     private void processTextLog(Update update, int user_id) {
