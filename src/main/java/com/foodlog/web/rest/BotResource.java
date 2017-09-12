@@ -61,27 +61,87 @@ public class BotResource {
     @RequestMapping(method= RequestMethod.POST, value="/update")
     public void ReceberUpdate(@RequestBody Update update) throws IOException {
 
+        try {
             int user_id = update.getMessage().getFrom().getId();
 
             String message = "Algum erro aconteceu...";
 
+            update = adjustTime(update);
 
-            if(update.getMessage().getText() != null && update.getMessage().getText().trim().toLowerCase().equals("prox")){
+
+            if (update.getMessage().getText() != null && update.getMessage().getText().trim().toLowerCase().equals("prox")) {
                 processaProx(update, user_id);
-            } else if(checkForWeight(update)) {
+            } else if (checkForWeight(update)) {
                 processWeight(update, user_id);
-            } else if(checkForTimeline(update)) {
+            } else if (checkForTimeline(update)) {
                 processTimeline(update, user_id);
-            } else if(checkForTextLog(update)){
+            } else if (checkForTextLog(update)) {
                 processTextLog(update, user_id);
-            } else if (checkForUndo(update)){
+            } else if (checkForUndo(update)) {
                 processUndo(update, user_id);
             } else {
                 processPhoto(update, user_id);
             }
+        } catch (Exception e) {
+            System.out.println("Excexxao ao processar coisa: " + e.getMessage());
+        }
 
 
     }
+
+    private Update adjustTime(Update update) {
+        String regex = "([0-1]\\d|2[0-3]):([0-5]\\d)";
+
+        System.out.println("update.getMessage().getText(): " + update.getMessage().getText());
+        System.out.println("update.getMessage().getCaption(): " + update.getMessage().getCaption());
+        System.out.println("checkRegex(update, regex): " + checkRegex(update, regex));
+
+        if(checkRegex(update, regex)){  //verifica xx:xx)
+
+            Pattern r = Pattern.compile(regex);
+
+            String text = update.getMessage().getText();
+            if(text == null || text.trim().equals("")){
+                text = update.getMessage().getCaption();
+            }
+
+            System.out.println("text: " + text);
+            if(text != null && !text.trim().equals("")) {
+                Matcher m = r.matcher(text);
+                m.find();
+
+                String newtime = m.group(0);
+
+
+                for (int i = 0; i < m.groupCount(); i++) {
+                    System.out.println("group " + i + ":" + m.group(i));
+                }
+
+                System.out.println("newtime: " + newtime);
+
+
+
+                String time[] = newtime.split(":");
+
+                ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+
+                int hour = Integer.parseInt(time[0]);
+                int minute = Integer.parseInt(time[1]);
+                ZonedDateTime target = now.with(LocalTime.of(hour, minute));
+
+                System.out.println("m.replaceAll(\"\"):" + m.replaceAll(""));
+                update.setUpdateDateTime(Instant.from(target));
+                update.getMessage().setCaption(m.replaceAll("").trim());
+                update.getMessage().setText(m.replaceAll("").trim());
+                return update;
+            }
+        }
+
+        update.setUpdateDateTime(Instant.now());
+        return update;
+
+    }
+
 
     private void processUndo(Update update, int user_id) throws IOException {
 
@@ -166,7 +226,7 @@ public class BotResource {
         Weight weight = new Weight();
         Float value = Float.parseFloat(update.getMessage().getText());
         weight.setValue(value);
-        weight.setWeightDateTime(Instant.now());
+        weight.setWeightDateTime(update.getUpdateDateTime());
         weight.setUpdateId(update.getUpdate_id());
 
         User currentUser = getCurrentUser(update);
@@ -206,6 +266,10 @@ public class BotResource {
             Matcher m = r.matcher(update.getMessage().getText());
             return m.find();
         }
+        if(update.getMessage().getCaption() != null) {
+            Matcher m = r.matcher(update.getMessage().getCaption());
+            return m.find();
+        }
         return false;
     }
     private boolean checkForWeight(Update update) {
@@ -213,7 +277,6 @@ public class BotResource {
     }
 
     private boolean checkForTextLog(Update update) {
-        //return checkRegex(update, "^([0-1]\\d|2[0-3]):([0-5]\\d).*");  //verifica xx:xx no comeco
         try {
             return update.getMessage().getText().toLowerCase().indexOf("meal:") == 0;
         } catch (Exception e){

@@ -48,11 +48,11 @@ public class PeopleDetector {
             // equalize the frame histogram to improve the result
             Imgproc.equalizeHist(grayFrame, grayFrame);
 
-            // compute minimum face size (5% of the frame height, in our case)
+            // compute minimum face size (40% of the frame height, in our case)
             int height = grayFrame.rows();
-            if (Math.round(height * 0.1f) > 0)
+            if (Math.round(height * 0.45f) > 0)
             {
-                absoluteFaceSize = Math.round(height * 0.1f);
+                absoluteFaceSize = Math.round(height * 0.45f);
             }
 
             int count = 0;
@@ -95,6 +95,7 @@ public class PeopleDetector {
                 Highgui.imencode(".jpg", frame ,mob);
                 return mob.toArray();
             }
+
 
             return null;
 

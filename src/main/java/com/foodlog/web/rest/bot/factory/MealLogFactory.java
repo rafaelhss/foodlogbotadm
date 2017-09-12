@@ -46,7 +46,7 @@ public class MealLogFactory {
         MealLog mealLog = new MealLog();
 
         //Date = now
-        mealLog.setMealDateTime(Instant.now());
+        mealLog.setMealDateTime(update.getUpdateDateTime());
 
         //Comment = caption
         String caption = update.getMessage().getCaption();
@@ -90,7 +90,7 @@ public class MealLogFactory {
 
 
             for (ScheduledMeal scheduledMeal : scheduledMealRepository.findAll()) {
-                if(checkTime(scheduledMeal)) {
+                if(checkTime(scheduledMeal, mealLog.getMealDateTime())) {
                     return scheduledMeal;
                 }
             }
@@ -101,10 +101,10 @@ public class MealLogFactory {
         return null;
     }
 
-    private boolean checkTime(ScheduledMeal scheduledMeal)  {
+    private boolean checkTime(ScheduledMeal scheduledMeal, Instant mealDateTime)  {
         String time[] = scheduledMeal.getTargetTime().split(":");
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        ZonedDateTime now = mealDateTime.atZone(ZoneId.of("America/Sao_Paulo"));
 
         int hour = Integer.parseInt(time[0]);
         int minute = Integer.parseInt(time[1]);

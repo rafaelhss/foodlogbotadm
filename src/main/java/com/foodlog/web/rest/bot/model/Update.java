@@ -1,11 +1,15 @@
 package com.foodlog.web.rest.bot.model;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 public class Update  implements Serializable {
 
-    public Long update_id;
-    public Message message;
+    private Long update_id;
+    private Message message;
+    private Instant updateDateTime;
+
+
 
     public Long getUpdate_id() {
         return update_id;
@@ -21,4 +25,11 @@ public class Update  implements Serializable {
         this.message = message;
     }
 
+    public Instant getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setUpdateDateTime(Instant updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
 }
