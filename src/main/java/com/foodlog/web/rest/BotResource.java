@@ -54,6 +54,9 @@ public class BotResource {
     @Autowired
     private BodyLogRepository bodyLogRepository;
 
+    @Autowired
+    private JacaRepository jacaRepository;
+
 
     private static final String BOT_ID = "380968235:AAGqnrSERR8ABcw-_avcPN2ES3KH5SeZtNM";
 
@@ -79,14 +82,36 @@ public class BotResource {
                 processTextLog(update, user_id);
             } else if (checkForUndo(update)) {
                 processUndo(update, user_id);
+            } else if (checkForJaca(update)) {
+                processJaca(update, user_id);
             } else {
                 processPhoto(update, user_id);
             }
         } catch (Exception e) {
             System.out.println("Excexxao ao processar coisa: " + e.getMessage());
         }
+    }
 
+    private void processJaca(Update update, int user_id) {
 
+        try {
+            Jaca jaca = new Jaca();
+            jaca.setJacaDateTime(update.getUpdateDateTime());
+            jaca.setUser(getCurrentUser(update));
+
+            jacaRepository.save(jaca);
+            new Sender(BOT_ID).sendResponse(user_id, "Jaca! A vida eh um trem bala! Aproveite. Amanha a gente volta com tudo!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean checkForJaca(Update update) {
+        try{
+            return update.getMessage().getText().trim().toLowerCase().equals("jaca");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Update adjustTime(Update update) {
