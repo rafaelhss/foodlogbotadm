@@ -29,7 +29,6 @@ public class PeopleDetector {
 
     public byte[] getPeopleInPhoto(byte[] photo) {
 
-        int absoluteFaceSize = 0;
 
         BufferedImage image = null;
         try {
@@ -48,17 +47,11 @@ public class PeopleDetector {
             // equalize the frame histogram to improve the result
             Imgproc.equalizeHist(grayFrame, grayFrame);
 
-            // compute minimum face size (40% of the frame height, in our case)
-            int height = grayFrame.rows();
-            if (Math.round(height * 0.45f) > 0)
-            {
-                absoluteFaceSize = Math.round(height * 0.45f);
-            }
 
             int count = 0;
             //Face frontal
             CascadeClassifier faceCascadeFace = getCascadeClassifier("config/haarcascade_frontalface_alt.xml");
-            count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeFace);
+            count += countPattern(Math.round(grayFrame.rows() * 0.1f), faces, grayFrame, faceCascadeFace);
             salvar(frame, faces, "1");
             if(count > 0){
                 MatOfByte mob = new MatOfByte();
@@ -68,14 +61,14 @@ public class PeopleDetector {
 
             //Corpo inteiro
             CascadeClassifier faceCascadeCorpo = getCascadeClassifier("config/haarcascade_fullbody.xml");
-            count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeCorpo);
+            count += countPattern(Math.round(grayFrame.rows() * 0.25f), faces, grayFrame, faceCascadeCorpo);
             salvar(frame, faces, "2");
             if(count > 0){
                 MatOfByte mob = new MatOfByte();
                 Highgui.imencode(".jpg", frame ,mob);
                 return mob.toArray();
             }
-
+/*
             //upper body
             CascadeClassifier faceCascadeUpper = getCascadeClassifier("config/haarcascade_upperbody.xml");
             count += countPattern(absoluteFaceSize, faces, grayFrame, faceCascadeUpper);
@@ -95,7 +88,7 @@ public class PeopleDetector {
                 Highgui.imencode(".jpg", frame ,mob);
                 return mob.toArray();
             }
-
+            */
 
             return null;
 
