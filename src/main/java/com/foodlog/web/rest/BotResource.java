@@ -433,7 +433,7 @@ public class BotResource {
                     MealLog mealLog = mealLogFactory.create(update, getCurrentUser(update));
                     message = saveMealLogAndGenerateMessage(update, mealLog);
 
-                    message += "   (getPeopleInPhoto(update):" + (imagePeopleBytes != null);
+                    message += "   Avalie enviando uma nota entre 0 e 5";
                 }
 
             } else {
