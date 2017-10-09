@@ -84,12 +84,56 @@ public class BotResource {
                 processUndo(update, user_id);
             } else if (checkForJaca(update)) {
                 processJaca(update, user_id);
-            } else {
+            } else if (checkForMealRating(update)) {
+                processMealRating(update, user_id);
+            } else{
                 processPhoto(update, user_id);
             }
         } catch (Exception e) {
             System.out.println("Excexxao ao processar coisa: " + e.getMessage());
         }
+    }
+
+    private void processMealRating(Update update, int user_id) {
+        try {
+            MealLog mealLog = mealLogRepository
+                .findTop1ByUserOrderByMealDateTimeDesc(getCurrentUser(update));
+
+
+            Integer rating = Integer.parseInt(update.getMessage().getText().trim());
+
+            mealLog.setRating(rating);
+
+            mealLogRepository.save(mealLog);
+
+            new Sender(BOT_ID).sendResponse(user_id, "Rating atualizado no meallog");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private boolean checkForMealRating(Update update) {
+        if(checkRegex(update, "^[0-5]+$")){
+
+            MealLog mealLog = mealLogRepository
+                .findTop1ByUserOrderByMealDateTimeDesc(getCurrentUser(update));
+            Instant refDate = mealLog.getMealDateTime();
+
+            Weight weight = weightRepository
+                .findTop1ByUserOrderByWeightDateTimeDesc(getCurrentUser(update));
+            if(weight.getWeightDateTime().isAfter(refDate)){
+                return false;
+            }
+
+            BodyLog bodyLog = bodyLogRepository
+                .findTop1ByUserOrderByBodyLogDatetimeDesc(getCurrentUser(update));
+            if(bodyLog.getBodyLogDatetime().isAfter(refDate)){
+                return false;
+            }
+
+            return true;
+
+        } else return false;
     }
 
     private void processJaca(Update update, int user_id) {
@@ -298,7 +342,7 @@ public class BotResource {
         return false;
     }
     private boolean checkForWeight(Update update) {
-        return checkRegex(update, "^[+-]?([0-9]*[.])?[0-9]+$");
+            return checkRegex(update, "^[+-]?([0-9]*[.])+[0-9]+$");
     }
 
     private boolean checkForTextLog(Update update) {

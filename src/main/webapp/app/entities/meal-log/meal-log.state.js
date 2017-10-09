@@ -100,6 +100,7 @@
                                 mealDateTime: null,
                                 comment: null,
                                 updateId: null,
+                                rating: null,
                                 id: null
                             };
                         }

@@ -39,6 +39,10 @@
         {
             "fieldName": "updateId",
             "fieldType": "Long"
+        },
+        {
+            "fieldName": "rating",
+            "fieldType": "Integer"
         }
     ],
     "changelogDate": "20170611010600",

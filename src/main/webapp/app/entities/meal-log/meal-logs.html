@@ -23,6 +23,7 @@
                     <th jh-sort-by="mealDateTime"><span>Meal Date Time</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="comment"><span>Comment</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="updateId"><span>Update Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="rating"><span>Rating</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="scheduledMeal.name"><span>Scheduled Meal</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th jh-sort-by="user.login"><span>User</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
@@ -40,6 +41,7 @@
                     <td>{{mealLog.mealDateTime | date:'medium'}}</td>
                     <td>{{mealLog.comment}}</td>
                     <td>{{mealLog.updateId}}</td>
+                    <td>{{mealLog.rating}}</td>
                     <td>
                         <a ui-sref="scheduled-meal-detail({id:mealLog.scheduledMeal.id})">{{mealLog.scheduledMeal.name}}</a>
                     </td>
